@@ -23,13 +23,14 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 .global gameLoop
 
 .section .game.data
+
+isgameover:		.byte 0						#checks if it's game over
+
 snakePos:		.zero 6000					#array with every location of the snake
 
 fruitPos:		.byte 64					#for debugging
 
-timer:			.byte 0
 
-isgameover:		.byte 0				#checks if it's game over
 
 .section .game.text
 .equ		vgaStart, 0xB8000               #start of screen
@@ -62,8 +63,8 @@ clearScreen:
 
 gameLoop:
 	
-	#cmpb	$0, isgameover(%rip)			#checks if game over
-	#jne		gameOver		
+	cmpb	$0, isgameover(%rip)			#checks if game over
+	jne		gameOver
 	
 	call	readKeyCode
 	cmpq	$0, %rax
@@ -108,7 +109,6 @@ right:
 	jmp		move
 
 move:
-
 	
 	incq	%r15						#clock speed to determine when should it move
 	cmpq	$10, %r15
@@ -181,12 +181,10 @@ normalMove:
 grow:
 	incq	%r14					#increase size
 	call	putFruit
-
-endLoop:
-
-	ret
+	jmp		endLoop
 
 gameOver:
+
 	movq    $posStart, %rdi       #move the board starting address to %rdi
 	subq    $8, %rdi
 	movw    $0x0F47, (%rdi)         #display "GAME"
@@ -198,10 +196,11 @@ gameOver:
 	movw    $0x0F56, 12(%rdi)
 	movw    $0x0F45, 14(%rdi)
 	movw    $0x0F52, 16(%rdi)
-	#movb	$1, isgameover
+	movb	$1, isgameover
+
+endLoop:
 
 	ret
-
 
 
 putFruit:
