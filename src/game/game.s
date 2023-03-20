@@ -24,9 +24,7 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 
 .section .game.data
 
-snakePos:		.zero 4000					#array with every location of the snake
-
-size:			.byte 64
+snakePos:		.zero 16000					#array with every location of the snake
 
 fruitPos:		.byte 64					#for debugging
 
@@ -60,6 +58,11 @@ clearScreen:
 	call 	putFruit
 
 gameLoop:
+	movb	$'Y', %dl
+	movq	$0, %rdi
+	movq	%r14, %rsi
+	movb	$0x0f, %cl
+	call	putChar
 	
 	incq	%r8						#clock speed to determine when should it move
 	cmpq	$10, %r8
@@ -123,7 +126,7 @@ passMoves:
 	addq	%r12, %rdi
 	movw	$0x0323, (%rdi)			#print next position
 
-	cmpq	%rdi, %r9				#checks if got the fruit
+	cmpq	%rdi, fruitPos				#checks if got the fruit
 	je		grow
 
 	movq	snakePos(,%r14,8), %rdi
@@ -140,10 +143,20 @@ endLoop:
 
 putFruit:
 
-	addq	$30, fruitPos
-	movq	fruitPos, %rdx
-	movq	%rdx, %r9				#saves the location of the fruit
-	movq	%rdx, %rdi
+	rdtsc                       	#get random pos to put the fruit    
+	movq    $0, %rdx
+	movq    $2000, %rcx         
+	divq	%rcx
+
+	movq	%rdx, %rax
+
+	movq	$2, %rcx
+	mulq	%rcx
+
+	addq	$vgaStart, %rax
+
+	movq	%rax, fruitPos				#saves the location of the fruit
+	movq	%rax, %rdi
 	movw	$0x0F3D, (%rdi)
 
 	ret
