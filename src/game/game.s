@@ -28,7 +28,9 @@ snakePos:		.zero 6000					#array with every location of the snake
 
 fruitPos:		.byte 64					#for debugging
 
-isgameover:		.byte 0					#checks if it's game over
+timer:			.byte 0
+
+isgameover:		.zero 1					#checks if it's game over
 
 .section .game.text
 .equ		vgaStart, 0xB8000               #start of screen
@@ -53,11 +55,11 @@ clearScreen:
 	movq	$0, %r12				#position to start
 	movq	$2, %r13				#witch offset to move
 	movq	$0, %r14				#size
-	movq	$0, %r8					#counter of loops to determine clock speed
+	movq	$0, %r15				#counter of loops to determine clock speed
 
 	#movq	$0, gameOver
 
-	movq	$posStart, snakePos(%r14,8)
+	movq	$posStart, snakePos(,%r14,8)
 
 	call 	putFruit
 
@@ -66,15 +68,11 @@ gameLoop:
 	#cmpb	$0, isgameover			#checks if game over
 	#jne		gameOver		
 
-	incq	%r8						#clock speed to determine when should it move
-	cmpq	$10, %r8
-	jl		endLoop
-	movq	$0, %r8
 
-
+	
 	call	readKeyCode
 	cmpq	$0, %rax
-	je		move
+	je		movePart
 	cmpq	$0x11, %rax			#compare W
 	je		up
 	cmpq	$0x1E, %rax			#compare A
@@ -84,35 +82,41 @@ gameLoop:
 	cmpq	$0x20, %rax			#compare D
 	je		right
 
-	jmp		move
+	jmp		movePart
 
 up:
 	cmpq	$160, %r13          #compare to make it impossible to walk back
-	je		move
+	je		movePart
 
 	movq	$-160, %r13
-	jmp		move
+	jmp		movePart
 
 left:
 	cmpq	$2, %r13          #compare to make it impossible to walk back
-	je		move
+	je		movePart
 
 	movq	$-2, %r13
-	jmp		move
+	jmp		movePart
 
 down:
 	cmpq	$-160, %r13          #compare to make it impossible to walk back
-	je		move
+	je		movePart
 
 	movq	$160, %r13
-	jmp		move
+	jmp		movePart
 
 right:
 	cmpq	$-2, %r13          #compare to make it impossible to walk back
-	je		move
+	je		movePart
 
 	movq	$2, %r13
 	jmp		move
+
+movePart:
+
+	incq	%r15						#clock speed to determine when should it move
+	cmpq	$10, %r15
+	jl		endLoop
 
 move:
 	movq	%r12, %rdx			#getting last move
@@ -171,6 +175,8 @@ goToBottom:
 	jmp		normalMove
 
 normalMove:
+
+	movq	$0, %r15
 
 	movq	$posStart, %rdi
 	addq	snakePos(,%r14,8), %rdi
