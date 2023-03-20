@@ -24,11 +24,16 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 
 .section .game.data
 
-position:	.quad 0x0				#counter of position
+snakePos:		.zero 4000					#array with every location of the snake
+
+size:			.byte 64
+
+fruitPos:		.byte 64					#for debugging
 
 .section .game.text
 .equ		vgaStart, 0xB8000               #start of screen
 .equ    	vgaEnd, 0xB8FA0                 #end if screen
+.equ		posStart, 0xB87D0
 
 	#0x0F3D
 
@@ -39,14 +44,17 @@ gameInit:
 
 	movq    $vgaStart, %rdi         #start of graphics memory
 
+	movq	$posStart, fruitPos(,1)
+
 clearScreen: 
     movw    $0, (%rdi)              #erase what was there before
     addq    $2, %rdi                #get next memory address
     cmpq    $vgaEnd, %rdi           #check if it is the end
-    jl      clearScreen                #if its not the end continue
+    jl      clearScreen             #if its not the end continue
 
 	movq	$0, %r12				#position to start
 	movq	$2, %r13				#witch offset to move
+	movq	$0, %r14				#size
 	movq	$0, %r8					#counter of loops to determine clock speed
 
 	call 	putFruit
@@ -91,35 +99,49 @@ right:
 
 move:
 
-	addq	%r13, %r12				#add value of next move to the snake
+	movq	$posStart, %rdx
+	addq	%r12, %rdx			#getting last move
 
-	#pushq	%r13
-	
-	movq    $vgaStart, %rdi
+	movq	$0, %r15			#loop counter
+
+passMoves:
+
+	movq	snakePos(%r15,8), %rsi	#shifting every move in the array
+	movq	%rdx, snakePos(,%r15,8)
+	movq	%rsi, %rdx
+
+	incq	%r15
+
+	cmpq	%r14, %r15
+	jle		passMoves
+
+
+	movq    $posStart, %rdi
+
+	addq	%r13, %r12				#add value of next move to the snake
 
 	addq	%r12, %rdi
 	movw	$0x0323, (%rdi)			#print next position
 
 	cmpq	%rdi, %r9				#checks if got the fruit
-	je		putFruit
-	
-	#popq	%r13
+	je		grow
 
-	subq	%r13, %rdi
-	movw	$0, (%rdi)				#delete old position
+	movq	snakePos(,%r14,8), %rdi
+	movw	$0, (%rdi,1)				#delete end of the tail
 	jmp 	endLoop
+
+grow:
+	incq	%r14					#increase size
+	call	putFruit
 
 endLoop:
 
 	ret
 
 putFruit:
-	rdtsc                       	#get random pos to put the fruit    
-	movq    $0, %rdx
-	movq    $4000, %rcx         
-	divq	%rcx
 
-	addq	$vgaStart, %rdx
+	addq	$30, fruitPos(,1)
+	movq	fruitPos(,1), %rdx
 	movq	%rdx, %r9				#saves the location of the fruit
 	movq	%rdx, %rdi
 	movw	$0x0F3D, (%rdi)
