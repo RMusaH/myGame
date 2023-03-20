@@ -55,6 +55,8 @@ clearScreen:
 	movq	$0, %r14				#size
 	movq	$0, %r8					#counter of loops to determine clock speed
 
+	movq	$posStart, snakePos(%r14,8)
+
 	call 	putFruit
 
 gameLoop:
@@ -101,9 +103,7 @@ right:
 	jmp		move
 
 move:
-
-	movq	$posStart, %rdx
-	addq	%r12, %rdx			#getting last move
+	movq	%r12, %rdx			#getting last move
 
 	movq	$0, %r15			#loop counter
 
@@ -129,7 +129,26 @@ passMoves:
 	cmpq	%rdi, fruitPos				#checks if got the fruit
 	je		grow
 
-	movq	snakePos(,%r14,8), %rdi
+	cmpq	$vgaEnd, %rdi				#check if it's on the down edge
+	jge		goToTop
+	cmpq	$vgaStart, %rdi				#check if it's on the top edge
+	jle		goToBottom
+	jmp		normalMove
+
+goToTop:
+
+	subq	$4000, %r12
+	jmp		normalMove
+
+goToBottom:
+
+	addq	$4000, %r12
+	jmp		normalMove
+
+normalMove:
+
+	movq	$posStart, %rdi
+	addq	snakePos(,%r14,8), %rdi
 	movw	$0, (%rdi,1)				#delete end of the tail
 	jmp 	endLoop
 
