@@ -44,7 +44,7 @@ gameInit:
 
 	movq    $vgaStart, %rdi         #start of graphics memory
 
-	movq	$posStart, fruitPos(,1)
+	movq	$posStart, fruitPos
 
 clearScreen: 
     movw    $0, (%rdi)              #erase what was there before
@@ -140,8 +140,8 @@ endLoop:
 
 putFruit:
 
-	addq	$30, fruitPos(,1)
-	movq	fruitPos(,1), %rdx
+	addq	$30, fruitPos
+	movq	fruitPos, %rdx
 	movq	%rdx, %r9				#saves the location of the fruit
 	movq	%rdx, %rdi
 	movw	$0x0F3D, (%rdi)
