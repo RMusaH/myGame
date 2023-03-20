@@ -28,6 +28,8 @@ isgameover:		.byte 0						#checks if it's game over
 
 toPrint:		.quad 0						#contains witch cchar to print
 
+lastMove:		.quad 0						#keeps track of last move
+
 snakePos:		.zero 6000					#array with every location of the snake
 
 fruitPos:		.quad 64					#has the fruit position
@@ -89,7 +91,7 @@ up:
 	movb	$0x2, %ah
 	movw	%ax, toPrint
 
-	cmpq	$160, %r13          #compare to make it impossible to walk back
+	cmpq	$160, lastMove          #compare to make it impossible to walk back
 	je		move
 
 	movq	$-160, %r13
@@ -100,7 +102,7 @@ left:
 	movb	$0x2, %ah
 	movw	%ax, toPrint
 
-	cmpq	$2, %r13          #compare to make it impossible to walk back
+	cmpq	$2, lastMove          #compare to make it impossible to walk back
 	je		move
 
 	movq	$-2, %r13
@@ -111,7 +113,7 @@ down:
 	movb	$0x2, %ah
 	movw	%ax, toPrint
 
-	cmpq	$-160, %r13          #compare to make it impossible to walk back
+	cmpq	$-160, lastMove          #compare to make it impossible to walk back
 	je		move
 
 	movq	$160, %r13
@@ -122,7 +124,7 @@ right:
 	movb	$0x2, %ah
 	movw	%ax, toPrint
 
-	cmpq	$-2, %r13          #compare to make it impossible to walk back
+	cmpq	$-2, lastMove          #compare to make it impossible to walk back
 	je		move
 
 	movq	$2, %r13
@@ -133,6 +135,8 @@ move:
 	incq	%r15						#clock speed to determine when should it move
 	cmpq	$10, %r15
 	jl		endLoop
+
+	movq	%r13, lastMove
 
 	movq	%r12, %rdx			#getting last move
 
