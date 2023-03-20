@@ -109,7 +109,7 @@ move:
 
 passMoves:
 
-	movq	snakePos(%r15,8), %rsi	#shifting every move in the array
+	movq	snakePos(,%r15,8), %rsi	#shifting every move in the array
 	movq	%rdx, snakePos(,%r15,8)
 	movq	%rsi, %rdx
 
