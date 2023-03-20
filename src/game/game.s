@@ -24,7 +24,7 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 
 .section .game.data
 
-snakePos:		.zero 16000					#array with every location of the snake
+snakePos:		.zero 6000					#array with every location of the snake
 
 fruitPos:		.byte 64					#for debugging
 
@@ -87,18 +87,30 @@ gameLoop:
 	jmp		move
 
 up:
+	cmpq	$160, %r13          #compare to make it impossible to walk back
+	je		move
+
 	movq	$-160, %r13
 	jmp		move
 
 left:
+	cmpq	$2, %r13          #compare to make it impossible to walk back
+	je		move
+
 	movq	$-2, %r13
 	jmp		move
 
 down:
+	cmpq	$-160, %r13          #compare to make it impossible to walk back
+	je		move
+
 	movq	$160, %r13
 	jmp		move
 
 right:
+	cmpq	$-2, %r13          #compare to make it impossible to walk back
+	je		move
+
 	movq	$2, %r13
 	jmp		move
 
@@ -149,7 +161,7 @@ normalMove:
 
 	movq	$posStart, %rdi
 	addq	snakePos(,%r14,8), %rdi
-	movw	$0x0F3A, (%rdi,1)				#delete end of the tail
+	movw	$0, (%rdi,1)				#delete end of the tail
 	jmp 	endLoop
 
 grow:
