@@ -28,12 +28,12 @@ snakePos:		.zero 6000					#array with every location of the snake
 
 fruitPos:		.byte 64					#for debugging
 
+isgameover:		.byte 0					#checks if it's game over
+
 .section .game.text
 .equ		vgaStart, 0xB8000               #start of screen
 .equ    	vgaEnd, 0xB8FA0                 #end if screen
 .equ		posStart, 0xB87D0
-
-	#0x0F3D
 
 gameInit:
 
@@ -55,17 +55,17 @@ clearScreen:
 	movq	$0, %r14				#size
 	movq	$0, %r8					#counter of loops to determine clock speed
 
+	#movq	$0, gameOver
+
 	movq	$posStart, snakePos(%r14,8)
 
 	call 	putFruit
 
 gameLoop:
-	movb	$'Y', %dl
-	movq	$0, %rdi
-	movq	%r14, %rsi
-	movb	$0x0f, %cl
-	call	putChar
 	
+	#cmpb	$0, isgameover			#checks if game over
+	#jne		gameOver		
+
 	incq	%r8						#clock speed to determine when should it move
 	cmpq	$10, %r8
 	jl		endLoop
@@ -138,6 +138,19 @@ passMoves:
 	addq	%r12, %rdi
 	movw	$0x0323, (%rdi)			#print next position
 
+
+	movq	$0, %r15				#loop counter
+
+checkIfDead:
+	movq	$posStart, %rcx						#loop to check if snake is on itself
+	addq	snakePos(,%r15,8), %rcx
+	cmpq	%rdi, %rcx
+	je		gameOver
+
+	incq	%r15
+	cmpq	%r14, %r15
+	jle		checkIfDead
+
 	cmpq	%rdi, fruitPos				#checks if got the fruit
 	je		grow
 
@@ -171,6 +184,24 @@ grow:
 endLoop:
 
 	ret
+
+gameOver:
+	movq    $posStart, %rdi       #move the board starting address to %rdi
+	subq    $8, %rdi
+	movw    $0x0F47, (%rdi)         #display "GAME"
+	movw    $0x0F41, 2(%rdi)
+	movw    $0x0F4D, 4(%rdi)
+	movw    $0x0F45, 6(%rdi)
+
+	movw    $0x0F4F, 10(%rdi)      #display "OVER"
+	movw    $0x0F56, 12(%rdi)
+	movw    $0x0F45, 14(%rdi)
+	movw    $0x0F52, 16(%rdi)
+	movb	$1, isgameover
+
+	ret
+
+
 
 putFruit:
 
