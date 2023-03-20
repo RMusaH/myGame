@@ -197,6 +197,10 @@ gameOver:
 	movw    $0x0F45, 14(%rdi)
 	movw    $0x0F52, 16(%rdi)
 	movb	$1, isgameover
+	
+	call	readKeyCode
+	cmpq	$0x39, %rax
+	je		gameInit
 
 endLoop:
 
