@@ -39,31 +39,23 @@ gameInit:
 
 	movq    $vgaStart, %rdi         #start of graphics memory
 
-initLoop: 
+clearScreen: 
     movw    $0, (%rdi)              #erase what was there before
     addq    $2, %rdi                #get next memory address
     cmpq    $vgaEnd, %rdi           #check if it is the end
-    jl      initLoop                #if its not the end continue
+    jl      clearScreen                #if its not the end continue
 
 	movq	$0, %r12				#position to start
 	movq	$2, %r13				#witch offset to move
 	movq	$0, %r8					#counter of loops to determine clock speed
-	movq	$1, %r9                 #snake size
 
-	rdtsc                       	#get random pos to put the fruit    
-	movq    $0, %rdx
-	movq    $4000, %rcx         
-	divq	%rcx
-
-	addq	$vgaStart, %rdx
-	movq	%rdx, %rdi
-	movw	$0x0F3D, (%rdi)
+	call 	putFruit
 
 gameLoop:
 	
 	incq	%r8						#clock speed to determine when should it move
 	cmpq	$10, %r8
-	jl		endloop
+	jl		endLoop
 	movq	$0, %r8
 
 
@@ -101,31 +93,35 @@ move:
 
 	addq	%r13, %r12				#add value of next move to the snake
 
-	pushq	%r13
+	#pushq	%r13
 	
 	movq    $vgaStart, %rdi
 
 	addq	%r12, %rdi
 	movw	$0x0323, (%rdi)			#print next position
 
-	popq	%r13
+	cmpq	%rdi, %r9				#checks if got the fruit
+	je		putFruit
+	
+	#popq	%r13
+
 	subq	%r13, %rdi
 	movw	$0, (%rdi)				#delete old position
+	jmp 	endLoop
 
-endloop:
+endLoop:
 
 	ret
 
 putFruit:
-	rdtsc                       #get random pos to put the fruit    
+	rdtsc                       	#get random pos to put the fruit    
 	movq    $0, %rdx
 	movq    $4000, %rcx         
 	divq	%rcx
 
-	addq	$vgaStart, %rcx
-	movq	%rcx, %rdi
+	addq	$vgaStart, %rdx
+	movq	%rdx, %r9				#saves the location of the fruit
+	movq	%rdx, %rdi
 	movw	$0x0F3D, (%rdi)
-
-
 
 	ret
