@@ -50,7 +50,14 @@ initLoop:
 	movq	$0, %r8					#counter of loops to determine clock speed
 	movq	$1, %r9                 #snake size
 
-	ret
+	rdtsc                       	#get random pos to put the fruit    
+	movq    $0, %rdx
+	movq    $4000, %rcx         
+	divq	%rcx
+
+	addq	$vgaStart, %rdx
+	movq	%rdx, %rdi
+	movw	$0x0F3D, (%rdi)
 
 gameLoop:
 	
