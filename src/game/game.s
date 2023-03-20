@@ -23,14 +23,13 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 .global gameLoop
 
 .section .game.data
-
 snakePos:		.zero 6000					#array with every location of the snake
 
 fruitPos:		.byte 64					#for debugging
 
 timer:			.byte 0
 
-isgameover:		.zero 1					#checks if it's game over
+isgameover:		.byte 0				#checks if it's game over
 
 .section .game.text
 .equ		vgaStart, 0xB8000               #start of screen
@@ -57,22 +56,18 @@ clearScreen:
 	movq	$0, %r14				#size
 	movq	$0, %r15				#counter of loops to determine clock speed
 
-	#movq	$0, gameOver
-
-	movq	$posStart, snakePos(,%r14,8)
+	movb	$0, isgameover(%rip)
 
 	call 	putFruit
 
 gameLoop:
 	
-	#cmpb	$0, isgameover			#checks if game over
+	#cmpb	$0, isgameover(%rip)			#checks if game over
 	#jne		gameOver		
-
-
 	
 	call	readKeyCode
 	cmpq	$0, %rax
-	je		movePart
+	je		move
 	cmpq	$0x11, %rax			#compare W
 	je		up
 	cmpq	$0x1E, %rax			#compare A
@@ -82,43 +77,43 @@ gameLoop:
 	cmpq	$0x20, %rax			#compare D
 	je		right
 
-	jmp		movePart
+	jmp		move
 
 up:
 	cmpq	$160, %r13          #compare to make it impossible to walk back
-	je		movePart
+	je		move
 
 	movq	$-160, %r13
-	jmp		movePart
+	jmp		move
 
 left:
 	cmpq	$2, %r13          #compare to make it impossible to walk back
-	je		movePart
+	je		move
 
 	movq	$-2, %r13
-	jmp		movePart
+	jmp		move
 
 down:
 	cmpq	$-160, %r13          #compare to make it impossible to walk back
-	je		movePart
+	je		move
 
 	movq	$160, %r13
-	jmp		movePart
+	jmp		move
 
 right:
 	cmpq	$-2, %r13          #compare to make it impossible to walk back
-	je		movePart
+	je		move
 
 	movq	$2, %r13
 	jmp		move
 
-movePart:
+move:
 
+	
 	incq	%r15						#clock speed to determine when should it move
 	cmpq	$10, %r15
 	jl		endLoop
 
-move:
 	movq	%r12, %rdx			#getting last move
 
 	movq	$0, %r15			#loop counter
@@ -203,7 +198,7 @@ gameOver:
 	movw    $0x0F56, 12(%rdi)
 	movw    $0x0F45, 14(%rdi)
 	movw    $0x0F52, 16(%rdi)
-	movb	$1, isgameover
+	#movb	$1, isgameover
 
 	ret
 
