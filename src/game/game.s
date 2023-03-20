@@ -27,18 +27,17 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 position:	.quad 0x0				#counter of position
 
 .section .game.text
-.equ		vgaStart, 0xB8000               #start of vga
-.equ    	vgaEnd, 0xB8FA0                 #end if vga
+.equ		vgaStart, 0xB8000               #start of screen
+.equ    	vgaEnd, 0xB8FA0                 #end if screen
+
+	#0x0F3D
 
 gameInit:
 
-	movq    $39772, %rdi            #reloadValue for 60 Hz since this game's logic is frame-dependent
-    call    setTimer                #call setTimer to load it to 60 Hz
+	movq    $19886, %rdi 
+    call    setTimer    
 
 	movq    $vgaStart, %rdi         #start of graphics memory
-
-	movq	$0, %r12
-	movq	$0, %r13
 
 initLoop: 
     movw    $0, (%rdi)              #erase what was there before
@@ -46,43 +45,80 @@ initLoop:
     cmpq    $vgaEnd, %rdi           #check if it is the end
     jl      initLoop                #if its not the end continue
 
+	movq	$0, %r12				#position to start
+	movq	$2, %r13				#witch offset to move
+	movq	$0, %r8					#counter of loops to determine clock speed
+	movq	$1, %r9                 #snake size
+
 	ret
 
 gameLoop:
+	
+	incq	%r8						#clock speed to determine when should it move
+	cmpq	$10, %r8
+	jl		endloop
+	movq	$0, %r8
 
-	incq	%r12
 
-	movq    $vgaStart, %rdi
-	movw	$0x0F3D, (%rdi)
-
-	# Check if a key has been pressed
 	call	readKeyCode
 	cmpq	$0, %rax
-	je		noClick
+	je		move
+	cmpq	$0x11, %rax			#compare W
+	je		up
+	cmpq	$0x1E, %rax			#compare A
+	je		left
+	cmpq	$0x1F, %rax			#compare S
+	je		down
+	cmpq	$0x20, %rax			#compare D
+	je		right
+
+	jmp		move
+
+up:
+	movq	$-160, %r13
+	jmp		move
+
+left:
+	movq	$-2, %r13
+	jmp		move
+
+down:
+	movq	$160, %r13
+	jmp		move
+
+right:
+	movq	$2, %r13
+	jmp		move
+
+move:
+
+	addq	%r13, %r12				#add value of next move to the snake
+
+	pushq	%r13
 	
-	
-	#movb	$'1', %dl
-	#movq	$1, %rdi
-	#movq	$0, %rsi
-	#movb	$0x0f, %cl
-	#call	putChar
+	movq    $vgaStart, %rdi
 
-noClick:
+	addq	%r12, %rdi
+	movw	$0x0323, (%rdi)			#print next position
 
-	#movb	$0, %dl
-	#movq	%r12, %r8
-	#decq	%r8
-	#movq	%r8, %rdi
-	#movq	$0, %rsi
-	#movb	$0x0f, %cl
-	#call	putChar
-
-	#movb	$'0', %dl
-	#movq	%r12, %rdi
-	#movq	$0, %rsi
-	#movb	$0x0f, %cl
-	#call	putChar
+	popq	%r13
+	subq	%r13, %rdi
+	movw	$0, (%rdi)				#delete old position
 
 endloop:
+
+	ret
+
+putFruit:
+	rdtsc                       #get random pos to put the fruit    
+	movq    $0, %rdx
+	movq    $4000, %rcx         
+	divq	%rcx
+
+	addq	$vgaStart, %rcx
+	movq	%rcx, %rdi
+	movw	$0x0F3D, (%rdi)
+
+
 
 	ret
