@@ -26,15 +26,17 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 
 isgameover:		.byte 0						#checks if it's game over
 
+toPrint:		.quad 0						#contains witch cchar to print
+
 snakePos:		.zero 6000					#array with every location of the snake
 
-fruitPos:		.byte 64					#for debugging
+fruitPos:		.quad 64					#has the fruit position
 
 
 
 .section .game.text
 .equ		vgaStart, 0xB8000               #start of screen
-.equ    	vgaEnd, 0xB8FA0                 #end if screen
+.equ    	vgaEnd, 0xB8FA0                 #end 0f screen
 .equ		posStart, 0xB87D0
 
 gameInit:
@@ -44,8 +46,6 @@ gameInit:
 
 	movq    $vgaStart, %rdi         #start of graphics memory
 
-	movq	$posStart, fruitPos
-
 clearScreen: 
     movw    $0, (%rdi)              #erase what was there before
     addq    $2, %rdi                #get next memory address
@@ -54,8 +54,12 @@ clearScreen:
 
 	movq	$0, %r12				#position to start
 	movq	$2, %r13				#witch offset to move
-	movq	$0, %r14				#size
+	movq	$4, %r14				#size
 	movq	$0, %r15				#counter of loops to determine clock speed
+
+	movb	$'H', %al
+	movb	$0x2, %ah
+	movw	%ax, toPrint
 
 	movb	$0, isgameover(%rip)
 
@@ -81,6 +85,10 @@ gameLoop:
 	jmp		move
 
 up:
+	movb	$'I', %al
+	movb	$0x2, %ah
+	movw	%ax, toPrint
+
 	cmpq	$160, %r13          #compare to make it impossible to walk back
 	je		move
 
@@ -88,6 +96,10 @@ up:
 	jmp		move
 
 left:
+	movb	$'H', %al
+	movb	$0x2, %ah
+	movw	%ax, toPrint
+
 	cmpq	$2, %r13          #compare to make it impossible to walk back
 	je		move
 
@@ -95,6 +107,10 @@ left:
 	jmp		move
 
 down:
+	movb	$'I', %al
+	movb	$0x2, %ah
+	movw	%ax, toPrint
+
 	cmpq	$-160, %r13          #compare to make it impossible to walk back
 	je		move
 
@@ -102,6 +118,10 @@ down:
 	jmp		move
 
 right:
+	movb	$'H', %al
+	movb	$0x2, %ah
+	movw	%ax, toPrint
+
 	cmpq	$-2, %r13          #compare to make it impossible to walk back
 	je		move
 
@@ -135,7 +155,8 @@ passMoves:
 	addq	%r13, %r12				#add value of next move to the snake
 
 	addq	%r12, %rdi
-	movw	$0x0323, (%rdi)			#print next position
+	movw	toPrint, %ax
+	movw	%ax, (%rdi)			#print next position
 
 
 	movq	$0, %r15				#loop counter
@@ -197,7 +218,7 @@ gameOver:
 	movw    $0x0F45, 14(%rdi)
 	movw    $0x0F52, 16(%rdi)
 	movb	$1, isgameover
-	
+
 	call	readKeyCode
 	cmpq	$0x39, %rax
 	je		gameInit
@@ -223,6 +244,9 @@ putFruit:
 
 	movq	%rax, fruitPos				#saves the location of the fruit
 	movq	%rax, %rdi
-	movw	$0x0F3D, (%rdi)
+
+	movb	$'0', %al
+	movb	$0x4, %ah
+	movw	%ax, (%rdi)
 
 	ret
