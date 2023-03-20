@@ -130,26 +130,26 @@ passMoves:
 	je		grow
 
 	cmpq	$vgaEnd, %rdi				#check if it's on the down edge
-	jge		goToTop
+	jg		goToTop
 	cmpq	$vgaStart, %rdi				#check if it's on the top edge
-	jle		goToBottom
+	jl		goToBottom
 	jmp		normalMove
 
 goToTop:
 
-	subq	$4000, %r12
+	subq	$4160, %r12
 	jmp		normalMove
 
 goToBottom:
 
-	addq	$4000, %r12
+	addq	$4160, %r12
 	jmp		normalMove
 
 normalMove:
 
 	movq	$posStart, %rdi
 	addq	snakePos(,%r14,8), %rdi
-	movw	$0, (%rdi,1)				#delete end of the tail
+	movw	$0x0F3A, (%rdi,1)				#delete end of the tail
 	jmp 	endLoop
 
 grow:
