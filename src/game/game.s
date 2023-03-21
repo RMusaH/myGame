@@ -322,7 +322,7 @@ move:
 
 	movq	%r12, %rdx			#getting last move
 
-	movq	$0, %r15			#loop counter
+	movq	$0,	timer			#loop counter
 
 passMoves:
 
