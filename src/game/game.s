@@ -250,14 +250,13 @@ grow:
 
 gameOver:
 
-	movq    $posStart, %rdi       #move the board starting address to %rdi
+	movq    $posStart, %rdi
 	subq    $8, %rdi
-	movw    $0x0F47, (%rdi)         #display "GAME"
+	movw    $0x0F47, (%rdi)  		#game over shows
 	movw    $0x0F41, 2(%rdi)
 	movw    $0x0F4D, 4(%rdi)
 	movw    $0x0F45, 6(%rdi)
-
-	movw    $0x0F4F, 10(%rdi)      #display "OVER"
+	movw    $0x0F4F, 10(%rdi)
 	movw    $0x0F56, 12(%rdi)
 	movw    $0x0F45, 14(%rdi)
 	movw    $0x0F52, 16(%rdi)
@@ -273,21 +272,44 @@ endLoop:
 
 
 putFruit:
-
 	rdtsc                       	#get random pos to put the fruit    
 	movq    $0, %rdx
-	movq    $2000, %rcx         
+	movq    $478, %rcx         		#(1856-160x2-64x9-4)/2
 	divq	%rcx
 
 	movq	%rdx, %rax
 
 	movq	$2, %rcx
 	mulq	%rcx
-
-	addq	$vgaStart, %rax
-
-	movq	%rax, fruitPos				#saves the location of the fruit
+	
 	movq	%rax, %rdi
+
+	addq	$arenaStart, %rdi
+	addq	$162, %rdi
+
+	movq	$arenaStart, %rcx
+	addq	$160, %rcx
+
+
+checkFruitLoop:						#check if fruit is on the arena
+	addq	$96, %rcx
+
+	cmpq	%rcx, %rdi
+	jl		endCheckFruitLoop
+
+	addq	$64, %rdi
+
+	addq	$64, %rcx
+
+	cmpq	%rcx, %rdi
+	jg		checkFruitLoop
+
+endCheckFruitLoop:
+
+
+
+
+	movq	%rdi, fruitPos				#saves the location of the fruit
 
 	movb	$'0', %al
 	movb	$0x4, %ah
