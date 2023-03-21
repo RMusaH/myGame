@@ -493,7 +493,7 @@ dontGetFaster:
 
 		incq	%r14		#increase size
 
-		cmpq	$1, score
+		cmpq	$10, score
 		je		win_case				
 
 		call	putFruit	
