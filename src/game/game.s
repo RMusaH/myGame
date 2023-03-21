@@ -428,7 +428,7 @@ score_calc_x1xx:
 
 win_case:
 	movq    $vgaStart, %rdi
-	addq    $552, %rdi
+	addq    $712, %rdi
 	movb	$0x0E, %ah
 	movb	$'V', %al
 	movw    %ax, (%rdi) 
@@ -466,14 +466,14 @@ gameOver:
 
 	movq    $posStart, %rdi
 	subq    $8, %rdi
-	movw    $0x0447, (%rdi)  		#game over shows
-	movw    $0x0441, 2(%rdi)
-	movw    $0x044D, 4(%rdi)
-	movw    $0x0445, 6(%rdi)
-	movw    $0x044F, 10(%rdi)
-	movw    $0x0456, 12(%rdi)
-	movw    $0x0445, 14(%rdi)
-	movw    $0x0452, 16(%rdi)
+	movw    $0x0F47, (%rdi)  		#game over shows
+	movw    $0x0F41, 2(%rdi)
+	movw    $0x0F4D, 4(%rdi)
+	movw    $0x0F45, 6(%rdi)
+	movw    $0x0F4F, 10(%rdi)
+	movw    $0x0F56, 12(%rdi)
+	movw    $0x0F45, 14(%rdi)
+	movw    $0x0F52, 16(%rdi)
 	movb	$1, isgameover
 
 	call	readKeyCode
@@ -524,7 +524,7 @@ endCheckFruitLoop:
 	movq	%rdi, fruitPos				#saves the location of the fruit
 
 	movb	$'0', %al
-	movb	$0x0C, %ah
+	movb	$0x4, %ah
 	movw	%ax, (%rdi)
 
 	ret
