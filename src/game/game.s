@@ -399,7 +399,7 @@ grow:
 
 		incq	%r14		#increase size
 
-		cmpq	$10, score
+		cmpq	$3, score
 		je		win_case				
 
 		call	putFruit	
@@ -453,6 +453,7 @@ win_case:
 	call	readKeyCode
 	cmpq	$0x39, %rax
 	jne		dontContinue
+	/je		gameInit
 
 	movb	$0, isWin
 
@@ -496,6 +497,23 @@ putFruit:
 
 	movq	$2, %rcx
 	mulq	%rcx
+
+	movq	$0, %rdx
+	movq	$arenaStart, %r8
+	movq	$arenaEnd, %r9
+
+	arenaCheck:
+		cmpq	%r8, %rax
+		je		putFruit
+		addq	$160, %r8
+
+		cmpq	%r9, %rax
+		je		putFruit
+		subq	$160, %r9
+
+		incq	%rdx
+		cmpq	$20, %rdx
+		jle		arenaCheck
 	
 	movq	%rax, %rdi
 
