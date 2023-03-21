@@ -58,9 +58,9 @@ timerCount:		.quad 0
 	victoryMsg:		.asciz		"VICTORY"
 	snakeMsg:		.asciz		"SNAKE"
 	gameoverMsg:	.asciz		"GAME OVER"
-	continueMsg:	.asciz		"PRESS SPACE TO PLAY..."
+	continueMsg:	.asciz		"PRESS SPACE TO CONTINUE"
 	victoryMsgCover:	.asciz	"       "
-	continueMsgCover:	.asciz	"                      "
+	continueMsgCover:	.asciz	"                         "
 
 	asciiArt1:		.asciz		"                 _        "
 	asciiArt2:		.asciz		"                | |       "
@@ -493,7 +493,7 @@ dontGetFaster:
 
 		incq	%r14		#increase size
 
-		cmpq	$10, score
+		cmpq	$1, score
 		je		win_case				
 
 		call	putFruit	
@@ -531,7 +531,7 @@ score_calc_x1xx:
 win_case:
 
 	movq    $vgaStart, %rdi
-	addq    $3264, %rdi
+	addq    $3116, %rdi
 	leaq	victoryMsg(%rip), %rcx
 	movq	$3, %r8
 	call	printText
@@ -539,7 +539,7 @@ win_case:
 	movb	$1, isWin
 
 	movq	$posStart, %rdi
-	addq	$1102, %rdi
+	addq	$1420, %rdi
 	leaq	continueMsg(%rip), %rcx
 	movq	$1, %r8
 	call	printText
@@ -550,12 +550,12 @@ win_case:
 	/je		gameInit
 	leaq	victoryMsgCover(%rip), %rcx
 	movq    $vgaStart, %rdi
-	addq    $552, %rdi
+	addq    $3116, %rdi
 	call	printText
 
 	leaq	continueMsgCover(%rip), %rcx
 	movq	$posStart, %rdi
-	addq	$1102, %rdi
+	addq	$1420, %rdi
 	call	printText
 	
 	movb	$0, isWin
@@ -576,7 +576,7 @@ gameOver:
 	movb	$1, isgameover
 
 	movq	$posStart, %rdi
-	addq	$1102, %rdi
+	addq	$1420, %rdi
 	leaq	continueMsg(%rip), %rcx
 	movq	$1, %r8
 	call	printText
