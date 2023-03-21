@@ -420,7 +420,7 @@ score_calc_x1xx:
 	jmp	grow_rest
 
 win_case:
-	movq    $vgaStart, %rdi
+	movq    $vgaStart, %rdi		#print victory
 	addq    $552, %rdi
 	movb	$0x0E, %ah
 	movb	$'V', %al
@@ -444,6 +444,8 @@ win_case:
 	movb	$'Y', %al
 	movw    %ax, 12(%rdi)
 	movb	$1, isWin
+	
+	call	printSpace
 
 	call	readKeyCode
 	cmpq	$0x39, %rax
@@ -468,15 +470,97 @@ gameOver:
 	movw    $0x0445, 14(%rdi)
 	movw    $0x0452, 16(%rdi)
 	movb	$1, isgameover
+	
+	call	printSpace
 
 	call	readKeyCode
 	cmpq	$0x39, %rax
 	je		gameInit
 
 endLoop:
-
 	ret
-
+	
+printSpace:
+	movq	$vgaEnd, %rdi
+	addq    $350, %rdi
+	
+	movb	$0x0F, %ah
+	movb	$'P', %al
+	movw    %ax, (%rdi) 
+	
+	movb	$0x0F, %ah		
+	movb	$'R', %al
+	movw    %ax, 2(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'E', %al
+	movw    %ax, 4(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'S', %al
+	movw    %ax, 6(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'S', %al
+	movw    %ax, 8(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$' ', %al
+	movw    %ax, 10(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'S', %al
+	movw    %ax, 12(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'P', %al
+	movw    %ax, 14(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'A', %al
+	movw    %ax, 16(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'C', %al
+	movw    %ax, 18(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'E', %al
+	movw    %ax, 20(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$' ', %al
+	movw    %ax, 22(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'T', %al
+	movw    %ax, 24(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'O', %al
+	movw    %ax, 26(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$' ', %al
+	movw    %ax, 28(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'P', %al
+	movw    %ax, 30(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'L', %al
+	movw    %ax, 32(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'A', %al
+	movw    %ax, 34(%rdi)
+	
+	movb	$0x0F, %ah
+	movb	$'Y', %al
+	movw    %ax, 36(%rdi)
+	
+	ret
 
 putFruit:
 	rdtsc                       	#get random pos to put the fruit    
