@@ -31,7 +31,8 @@ toPrint:		.quad 0						#contains witch cchar to print
 
 lastMove:		.quad 0						#keeps track of last move
 
-score:			.quad 0
+score:		.quad 0
+highScore:	.quad 0
 score_xxx1:			.quad 0
 score_xx1x:			.quad 0
 score_x1xx:			.quad 0
@@ -330,6 +331,15 @@ grow:
 	jmp	score_calc_xxx1
 	grow_rest:
 		incq	score
+		
+		/*cmpq	score, highScore
+		jge	noNewHighScore
+		newHighScore:
+		movq	score, %rbx
+		movq	%rbx, highScore*/
+		
+
+
 		incq	%r14					#increase size
 		call	putFruit
 		jmp		endLoop
