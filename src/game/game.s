@@ -375,11 +375,15 @@ right:
 
 move:
 
+	cmpq	$14, timerCount
+	je		skipMove
+
 	incq	timer						#clock speed to determine when should it move
 	movq	timerCount, %rax
 	cmpq	%rax, timer
 	jl		endLoop
 
+	skipMove:
 	movq	%r13, lastMove
 
 	movq	%r12, %rdx			#getting last move
