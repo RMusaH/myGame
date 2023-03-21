@@ -467,6 +467,7 @@ win_case:
 	call	printText
 	
 	movb	$0, isWin
+	call 	putFruit
 
 dontContinue:
 	jmp	endLoop
