@@ -53,6 +53,7 @@ fruitPos:		.quad 0						#has the fruit position
 	highscoreMsg:	.asciz		"HIGHSCORE"
 	victoryMsg:		.asciz		"VICTORY"
 	snakeMsg:		.asciz		"SNAKE"
+	gameoverMsg:	.asciz		"GAMEOVER"
 
 
 gameInit:
@@ -158,6 +159,9 @@ printText:
 	cmpq	$3, %r8
 	je		yellow
 
+	cmpq	$4, %r8
+	je		red
+
 	black:
 		movb	$0x0F, %ah
 		movq	$0, %r8
@@ -165,6 +169,11 @@ printText:
 
 	yellow:
 		movb	$0x0E, %ah
+		movq	$0, %r8	
+		jmp		printMsgLoop
+
+	red:
+		movb	$0x04, %ah
 		movq	$0, %r8	
 		jmp		printMsgLoop
 
@@ -448,14 +457,10 @@ gameOver:
 
 	movq    $posStart, %rdi
 	subq    $8, %rdi
-	movw    $0x0447, (%rdi)  		#game over shows
-	movw    $0x0441, 2(%rdi)
-	movw    $0x044D, 4(%rdi)
-	movw    $0x0445, 6(%rdi)
-	movw    $0x044F, 10(%rdi)
-	movw    $0x0456, 12(%rdi)
-	movw    $0x0445, 14(%rdi)
-	movw    $0x0452, 16(%rdi)
+	leaq	gameoverMsg(%rip), %rcx
+	movq	$4, %r8
+	call	printText
+
 	movb	$1, isgameover
 
 	call	readKeyCode
