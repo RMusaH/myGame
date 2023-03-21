@@ -62,6 +62,13 @@ timerCount:		.quad 0
 	victoryMsgCover:	.asciz	"       "
 	continueMsgCover:	.asciz	"                      "
 
+	asciiArt1:		.asciz		"                 _        "
+	asciiArt2:		.asciz		"                | |       "
+	asciiArt3:		.asciz		" ___ _ __   __ _| | _____ "
+	asciiArt4:		.asciz		"/ __| '_ \\ / _` | |/ / _ \\"
+	asciiArt5:		.asciz		"\\__ \\ | | | (_| |   <  __/"
+	asciiArt6:		.asciz		"|___/_| |_|\\__,_|_|\\_\\___|"
+
 
 gameInit:
 
@@ -146,9 +153,28 @@ drawArenaBottom:
 
 printSnake:
 	movq    $vgaStart, %rdi			#display "snake"
-	addq    $394, %rdi
+	addq	$56, %rdi
 	movq	$2, %r8
-	leaq	snakeMsg(%rip), %rcx
+	leaq	asciiArt1(%rip), %rcx
+	call	printText
+	addq    $160, %rdi
+	movq	$2, %r8
+	leaq	asciiArt2(%rip), %rcx
+	call	printText
+	movq	$2, %r8
+	leaq	asciiArt3(%rip), %rcx
+	call	printText
+	addq    $160, %rdi
+	movq	$2, %r8
+	leaq	asciiArt4(%rip), %rcx
+	call	printText
+	addq    $160, %rdi
+	movq	$2, %r8
+	leaq	asciiArt5(%rip), %rcx
+	call	printText
+	addq    $160, %rdi
+	movq	$2, %r8
+	leaq	asciiArt6(%rip), %rcx
 	call	printText
 
 	ret
