@@ -1,18 +1,14 @@
 /*
 This file is part of gamelib-x64.
-
 Copyright (C) 2014 Tim Hegeman
-
 gamelib-x64 is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
-
 gamelib-x64 is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
 You should have received a copy of the GNU General Public License
 along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 */
@@ -117,7 +113,7 @@ drawArenaBottom:
     cmpq    $arenaEnd, %rdi
     jl      drawArenaBottom   
 
-drawSnake:	
+	
 	movq    $vgaStart, %rdi			#display "snake"
 	addq    $394, %rdi
 	movb	$0x0A, %ah
@@ -136,7 +132,7 @@ drawSnake:
 	movb	$'E', %al
 	movw    %ax, 8(%rdi)
 
-drawScore:
+
 	movq    $vgaStart, %rdi		#display "score"
 	addq    $354, %rdi
 	movb	$0x0F, %ah
@@ -155,7 +151,6 @@ drawScore:
 	movb	$'E', %al
 	movw    %ax, 8(%rdi)
 
-drawHighscore:
 	addq    $80, %rdi			#highscore display
 	movb	$0x0E, %ah
 	movb	$'H', %al
@@ -186,8 +181,34 @@ drawHighscore:
 
 
 gameLoop:
-	call	updateScore
-	call	updateHighscore
+	movq    $vgaStart, %rdi
+	addq    $514, %rdi
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	score_xxx1, %al
+	movw    %ax, 6(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	score_xx1x, %al
+	movw    %ax, 4(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	score_x1xx, %al
+	movw    %ax, 2(%rdi)
+
+	addq    $84, %rdi
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	highScore_xxx1, %al
+	movw    %ax, 6(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	highScore_xx1x, %al
+	movw    %ax, 4(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	highScore_x1xx, %al
+	movw    %ax, 2(%rdi)
 
 	cmpb	$0, isgameover(%rip)			#checks if game over
 	jne		gameOver
@@ -207,38 +228,6 @@ gameLoop:
 	je		right
 
 	jmp		move
-	
-updateScore:
-	movq    $vgaStart, %rdi
-	addq    $514, %rdi
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	score_xxx1, %al
-	movw    %ax, 6(%rdi)
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	score_xx1x, %al
-	movw    %ax, 4(%rdi)
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	score_x1xx, %al
-	movw    %ax, 2(%rdi)
-
-updateHighSchool:
-	movq    $vgaStart, %rdi
-	addq    $84, %rdi
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	highScore_xxx1, %al
-	movw    %ax, 6(%rdi)
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	highScore_xx1x, %al
-	movw    %ax, 4(%rdi)
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	highScore_x1xx, %al
-	movw    %ax, 2(%rdi)
 
 up:
 	movb	$'I', %al
@@ -428,7 +417,7 @@ score_calc_x1xx:
 
 win_case:
 	movq    $vgaStart, %rdi
-	addq    $712, %rdi
+	addq    $552, %rdi
 	movb	$0x0E, %ah
 	movb	$'V', %al
 	movw    %ax, (%rdi) 
@@ -466,14 +455,14 @@ gameOver:
 
 	movq    $posStart, %rdi
 	subq    $8, %rdi
-	movw    $0x0F47, (%rdi)  		#game over shows
-	movw    $0x0F41, 2(%rdi)
-	movw    $0x0F4D, 4(%rdi)
-	movw    $0x0F45, 6(%rdi)
-	movw    $0x0F4F, 10(%rdi)
-	movw    $0x0F56, 12(%rdi)
-	movw    $0x0F45, 14(%rdi)
-	movw    $0x0F52, 16(%rdi)
+	movw    $0x0447, (%rdi)  		#game over shows
+	movw    $0x0441, 2(%rdi)
+	movw    $0x044D, 4(%rdi)
+	movw    $0x0445, 6(%rdi)
+	movw    $0x044F, 10(%rdi)
+	movw    $0x0456, 12(%rdi)
+	movw    $0x0445, 14(%rdi)
+	movw    $0x0452, 16(%rdi)
 	movb	$1, isgameover
 
 	call	readKeyCode
@@ -524,7 +513,7 @@ endCheckFruitLoop:
 	movq	%rdi, fruitPos				#saves the location of the fruit
 
 	movb	$'0', %al
-	movb	$0x4, %ah
+	movb	$0x0C, %ah
 	movw	%ax, (%rdi)
 
 	ret
