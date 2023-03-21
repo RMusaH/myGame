@@ -302,15 +302,76 @@ notDead:
 	jmp 	endLoop
 
 grow:
-	incq	score
-	incq	%r14					#increase size
-	call	putFruit
-	jmp		endLoop
+	jmp	score_calc_xxx1
+	grow_rest:
+		incq	score
+		incq	%r14					#increase size
+		call	putFruit
+		jmp		endLoop
+	
+score_calc_xxx1:
+	cmpq	$9, score_xxx1
+	jge	reset_xxx1
+	
+	incq	score_xxx1
+	jmp	grow_rest
+	
+	reset_xxx1:
+		movq	$0, score_xxx1
+		jmp	score_calc_xx1x
+		
+score_calc_xx1x:
+	cmpq	$9, score_xx1x
+	jge	reset_xx1x
+	
+	incq	score_xx1x
+	jmp	grow_rest
+	
+	reset_xx1x:
+		movq	$0, score_xx1x
+		jmp	score_calc_x1xx
+		
+score_calc_x1xx:
+	cmpq	$9, score_x1xx
+	jge	reset_x1xx
+	
+	incq	score_x1xx
+	jmp	grow_rest
+	
+	reset_x1xx:
+		movq	$0, score_x1xx
+		jmp	score_calc_1xxx
+		
+score_calc_1xxx:
+	cmpq	$9, score_1xxx
+	jge	win_case
+	
+	incq	score_1xxx
+	jmp	grow_rest
+	
+win_case:
+	movq    $posStart, %rdi
+	subq    $8, %rdi	#shouldnt here be subq	$16? since ig you are making space for 8 words and 1 word is 2 bytes
+	movw    $0x0F47, (%rdi)  		#game over shows
+	movw    $0x0F41, 2(%rdi)
+	movw    $0x0F4D, 4(%rdi)
+	movw    $0x0F45, 6(%rdi)
+	movw    $0x0F4F, 10(%rdi)
+	movw    $0x0F56, 12(%rdi)
+	movw    $0x0F45, 14(%rdi)
+	movw    $0x0F52, 16(%rdi)
+	movb	$1, isgameover
+
+	call	readKeyCode
+	cmpq	$0x39, %rax
+	je		gameInit
+
+
 
 gameOver:
 
 	movq    $posStart, %rdi
-	subq    $8, %rdi
+	subq    $8, %rdi	#shouldnt here be subq	$16? since ig you are making space for 8 words and 1 word is 2 bytes
 	movw    $0x0F47, (%rdi)  		#game over shows
 	movw    $0x0F41, 2(%rdi)
 	movw    $0x0F4D, 4(%rdi)
