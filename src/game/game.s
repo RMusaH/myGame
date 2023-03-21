@@ -69,6 +69,14 @@ timerCount:		.quad 0
 	asciiArt5:		.asciz		"\\__ \\ | | | (_| |   <  __/"
 	asciiArt6:		.asciz		"|___/_| |_|\\__,_|_|\\_\\___|"
 
+	headArt1:		.asciz		"           /^\\/^\\"
+	headArt2:		.asciz		"         _|__|  O|"
+	headArt3:		.asciz		"\\/     /~     \\_/ \\"
+	headArt4:		.asciz		" \\____|__________/  \\"
+	headArt5:		.asciz		"        \\_______      \\"
+	headArt6:		.asciz		"                `\\     \\"
+
+
 
 gameInit:
 
@@ -101,6 +109,7 @@ clearScreen:
 
 	call 	putFruit
 
+	movq	$10, timerCount
 	
 	movq	$arenaStart, %rdi
 	movq	$arenaStart, %rcx
@@ -175,6 +184,31 @@ printSnake:
 	addq    $160, %rdi
 	movq	$2, %r8
 	leaq	asciiArt6(%rip), %rcx
+	call	printText
+
+	movq    $vgaEnd, %rdi			#display "snake"
+	subq	$56, %rdi
+	movq	$2, %r8
+	leaq	headArt6(%rip), %rcx
+	call	printText
+	subq    $160, %rdi
+	movq	$2, %r8
+	leaq	headArt5(%rip), %rcx
+	call	printText
+	movq	$2, %r8
+	leaq	headArt4(%rip), %rcx
+	call	printText
+	subq    $160, %rdi
+	movq	$2, %r8
+	leaq	headArt3(%rip), %rcx
+	call	printText
+	subq    $160, %rdi
+	movq	$2, %r8
+	leaq	headArt2(%rip), %rcx
+	call	printText
+	subq    $160, %rdi
+	movq	$2, %r8
+	leaq	headArt1(%rip), %rcx
 	call	printText
 
 	ret
@@ -340,16 +374,10 @@ right:
 	jmp		move
 
 move:
-	movq	$0, %rdx
-	movq	timerCount, %rax
-	movq	$5, %rcx
-	divq	%rcx
-	movq	$0, %rdx
 
-	addq	$1, %rax
-	addq	%rax, timer
-	/incq	timer						#clock speed to determine when should it move
-	cmpq	$10, timer
+	incq	timer						#clock speed to determine when should it move
+	movq	timerCount, %rax
+	cmpq	%rax, timer
 	jl		endLoop
 
 	movq	%r13, lastMove
@@ -428,10 +456,23 @@ notDead:
 	jmp 	endLoop
 
 grow:
-	incq	timerCount
 	jmp	score_calc_xxx1
 	grow_rest:
-		incq	score
+
+	incq	score
+
+	movq	$0, %rdx
+	movq	score, %rax
+	cmpq	$0, %rax
+	je		dontGetFaster
+	movq	$2, %rcx
+	divq	%rcx
+	cmpq	$0, %rdx
+	jne		dontGetFaster
+
+	decq	timerCount
+
+dontGetFaster:
 		
 		movq	score, %rcx
 		cmpq	%rcx, highScore
@@ -490,7 +531,7 @@ score_calc_x1xx:
 win_case:
 
 	movq    $vgaStart, %rdi
-	addq    $552, %rdi
+	addq    $3264, %rdi
 	leaq	victoryMsg(%rip), %rcx
 	movq	$3, %r8
 	call	printText
@@ -539,8 +580,6 @@ gameOver:
 	leaq	continueMsg(%rip), %rcx
 	movq	$1, %r8
 	call	printText
-
-	movq	$0, timerCount
 
 	call	readKeyCode
 	cmpq	$0x39, %rax
