@@ -32,6 +32,10 @@ toPrint:		.quad 0						#contains witch cchar to print
 lastMove:		.quad 0						#keeps track of last move
 
 score:			.quad 0
+score_xxx1:			.quad 0
+score_xx1x:			.quad 0
+score_x1xx:			.quad 0
+score_1xxx:			.quad 0
 
 snakePos:		.zero 6000					#array with every location of the snake
 
