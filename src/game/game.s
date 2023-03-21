@@ -475,7 +475,8 @@ endLoop:
 putFruit:
 	rdtsc                       	#get random pos to put the fruit    
 	movq    $0, %rdx
-	movq    $478, %rcx         		#(1856-160x2-64x9-4)/2
+	//movq    $478, %rcx         		#(1856-160x2-64x9-4)/2
+	movq	$447, %rcx					#(23*78 - ...)
 	divq	%rcx
 
 	movq	%rdx, %rax
@@ -486,7 +487,7 @@ putFruit:
 	movq	%rax, %rdi
 
 	addq	$arenaStart, %rdi
-	addq	$162, %rdi
+	addq	$160, %rdi
 
 	movq	$arenaStart, %rcx
 	addq	$160, %rcx
