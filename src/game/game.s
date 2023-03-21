@@ -512,6 +512,7 @@ endCheckFruitLoop:
 	movq	%rdi, fruitPos				#saves the location of the fruit
 
 	movb	$'0', %al
+	#movq	$'., %al --> print a dot for some reason, so to print a non-letter character dont add ending '
 	movb	$0x0C, %ah
 	movw	%ax, (%rdi)
 
