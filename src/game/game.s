@@ -44,11 +44,14 @@ fruitPos:		.quad 0						#has the fruit position
 
 
 .section .game.text
-.equ		vgaStart, 0xB8000               #start of screen
-.equ    	vgaEnd, 0xB8FA0                 #end 0f screen
-.equ		posStart, 0xB87D0
-.equ		arenaStart, 0xB83E0				#+992 (6 lines + 1/5)
-.equ		arenaEnd, 0xB8B20				#+2848 (18 lines - 1/5)
+	.equ		vgaStart,	0xB8000               #start of screen
+	.equ    	vgaEnd,		0xB8FA0                 #end 0f screen
+	.equ		posStart,	0xB87D0
+	.equ		arenaStart, 0xB83E0				#+992 (6 lines + 1/5)
+	.equ		arenaEnd, 	0xB8B20				#+2848 (18 lines - 1/5)
+	scoreMsg:		.asciz		"SCORE"
+	highscoreMsg:	.asciz		"HIGHSCORE"
+
 
 gameInit:
 
@@ -114,8 +117,20 @@ drawArenaBottom:
     jl      drawArenaBottom   
 
 	call	printSnake
-	call	printScore
-	call	printHighscore
+	
+	leaq	scoreMsg(%rip), %rcx	#string to print
+	movq	$1, %rsi				#color of the string 1- black
+	movq	$vgaStart, %rdi			#display "score"
+	addq    $354, %rdi				#where to print
+
+	call	printText
+	movq	$0, %rcx
+
+	leaq	highscoreMsg(%rip), %rcx
+	movq	$3, %rsi
+	movq	$vgaStart, %rdi			#display "score"
+	addq    $434, %rdi
+	call	printText
 
 	jmp		gameLoop
 
@@ -140,24 +155,36 @@ printSnake:
 
 	ret
 
-printScore:
-	movq    $vgaStart, %rdi		#display "score"
-	addq    $354, %rdi
-	movb	$0x0F, %ah
-	movb	$'S', %al
-	movw    %ax, (%rdi) 
-	movb	$0x0F, %ah		
-	movb	$'C', %al
-	movw    %ax, 2(%rdi)
-	movb	$0x0F, %ah
-	movb	$'O', %al
-	movw    %ax, 4(%rdi)
-	movb	$0x0F, %ah
-	movb	$'R', %al
-	movw    %ax, 6(%rdi)
-	movb	$0x0F, %ah
-	movb	$'E', %al
-	movw    %ax, 8(%rdi)
+printText:
+	movq	$0, %r8
+
+	cmpq	$1, %rsi
+	je		black
+
+	cmpq	$2, %rsi
+	je		green
+
+	cmpq	$3, %rsi
+	je		yellow
+
+	black:
+		movb	$0x0F, %ah
+		jmp		printMsgLoop
+
+	yellow:
+		movb	$0x0E, %ah	
+		jmp		printMsgLoop
+
+	green:
+		movb	$0x0A, %ah
+
+	printMsgLoop:		
+		movb	(%rcx, %r8, 1), %al
+		movw	%ax,(%rdi, %r8, 2)
+		incq	%r8
+		movb	(%rcx, %r8, 1), %al
+		cmpb	$0, %al
+		jne		printMsgLoop
 
 	ret
 
