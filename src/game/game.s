@@ -53,8 +53,10 @@ fruitPos:		.quad 0						#has the fruit position
 	highscoreMsg:	.asciz		"HIGHSCORE"
 	victoryMsg:		.asciz		"VICTORY"
 	snakeMsg:		.asciz		"SNAKE"
-	gameoverMsg:	.asciz		"GAMEOVER"
+	gameoverMsg:	.asciz		"GAME OVER"
 	continueMsg:	.asciz		"PRESS SPACE TO PLAY..."
+	victoryMsgCover:	.asciz	"       "
+	continueMsgCover:	.asciz	"                      "
 
 
 gameInit:
@@ -454,7 +456,16 @@ win_case:
 	cmpq	$0x39, %rax
 	jne		dontContinue
 	/je		gameInit
+	leaq	victoryMsgCover(%rip), %rcx
+	movq    $vgaStart, %rdi
+	addq    $552, %rdi
+	call	printText
 
+	leaq	continueMsgCover(%rip), %rcx
+	movq	$posStart, %rdi
+	addq	$1102, %rdi
+	call	printText
+	
 	movb	$0, isWin
 
 dontContinue:
@@ -501,19 +512,6 @@ putFruit:
 	movq	$0, %rdx
 	movq	$arenaStart, %r8
 	movq	$arenaEnd, %r9
-
-	arenaCheck:
-		cmpq	%r8, %rax
-		je		putFruit
-		addq	$160, %r8
-
-		cmpq	%r9, %rax
-		je		putFruit
-		subq	$160, %r9
-
-		incq	%rdx
-		cmpq	$20, %rdx
-		jle		arenaCheck
 	
 	movq	%rax, %rdi
 
