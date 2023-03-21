@@ -54,6 +54,7 @@ fruitPos:		.quad 0						#has the fruit position
 	victoryMsg:		.asciz		"VICTORY"
 	snakeMsg:		.asciz		"SNAKE"
 	gameoverMsg:	.asciz		"GAMEOVER"
+	continueMsg:	.asciz		"PRESS SPACE TO PLAY..."
 
 
 gameInit:
@@ -151,7 +152,7 @@ printSnake:
 #r8  - color
 printText:
 	cmpq	$1, %r8
-	je		black
+	je		white
 
 	cmpq	$2, %r8
 	je		green
@@ -162,7 +163,7 @@ printText:
 	cmpq	$4, %r8
 	je		red
 
-	black:
+	white:
 		movb	$0x0F, %ah
 		movq	$0, %r8
 		jmp		printMsgLoop
@@ -443,6 +444,12 @@ win_case:
 
 	movb	$1, isWin
 
+	movq	$posStart, %rdi
+	addq	$1102, %rdi
+	leaq	continueMsg(%rip), %rcx
+	movq	$1, %r8
+	call	printText
+
 	call	readKeyCode
 	cmpq	$0x39, %rax
 	jne		dontContinue
@@ -462,6 +469,12 @@ gameOver:
 	call	printText
 
 	movb	$1, isgameover
+
+	movq	$posStart, %rdi
+	addq	$1102, %rdi
+	leaq	continueMsg(%rip), %rcx
+	movq	$1, %r8
+	call	printText
 
 	call	readKeyCode
 	cmpq	$0x39, %rax
