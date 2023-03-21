@@ -24,11 +24,14 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 
 .section .game.data
 
+
 isgameover:		.byte 0						#checks if it's game over
 
 toPrint:		.quad 0						#contains witch cchar to print
 
 lastMove:		.quad 0						#keeps track of last move
+
+wallsData:		.quad 0
 
 snakePos:		.zero 6000					#array with every location of the snake
 
@@ -40,6 +43,8 @@ fruitPos:		.quad 64					#has the fruit position
 .equ		vgaStart, 0xB8000               #start of screen
 .equ    	vgaEnd, 0xB8FA0                 #end 0f screen
 .equ		posStart, 0xB87D0
+.equ		arenaStart, 0xB83E0				#+992 (6 lines + 1/5)
+.equ		arenaEnd, 0xB8B20				#+2848 (18 lines - 1/5)
 
 gameInit:
 
@@ -67,8 +72,43 @@ clearScreen:
 
 	call 	putFruit
 
+	
+	movq	$arenaStart, %rdi
+	movq	$arenaStart, %rcx
+	addq	$98, %rcx
+
+drawArenaTop: 
+    movw    $0xF000, (%rdi)
+    addq    $2, %rdi                
+    cmpq    %rcx, %rdi          
+    jl      drawArenaTop   
+       
+	addq	$62, %rdi  
+
+drawArenaWall: 
+    movw    $0xF000, (%rdi)
+	addq	$96, %rdi
+
+	movw    $0xF000, (%rdi)       
+    addq    $64, %rdi
+
+    cmpq    $arenaEnd, %rdi
+    jl      drawArenaWall 
+
+
+	subq	$160, %rdi
+
+drawArenaBottom:
+	movw    $0xF000, (%rdi)
+    addq    $2, %rdi                
+    cmpq    $arenaEnd, %rdi
+    jl      drawArenaBottom   
+
+
+
 gameLoop:
 	
+
 	cmpb	$0, isgameover(%rip)			#checks if game over
 	jne		gameOver
 	
