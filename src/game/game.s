@@ -31,16 +31,18 @@ toPrint:		.quad 0						#contains witch cchar to print
 
 lastMove:		.quad 0						#keeps track of last move
 
-score:		.quad 0
-highScore:	.quad 0
-score_xxx1:			.quad 0
-score_xx1x:			.quad 0
-score_x1xx:			.quad 0
-score_1xxx:			.quad 0
+score:			.quad 0
+highScore:		.quad 0
+score_xxx1:		.quad 0
+score_xx1x:		.quad 0
+score_x1xx:		.quad 0
+highScore_xxx1:	.quad 0
+highScore_xx1x:	.quad 0
+highScore_x1xx:	.quad 0
 
 snakePos:		.zero 6000					#array with every location of the snake
 
-fruitPos:		.quad 64					#has the fruit position
+fruitPos:		.quad 0						#has the fruit position
 
 
 
@@ -59,7 +61,7 @@ gameInit:
 	movq    $vgaStart, %rdi         #start of graphics memory
 
 clearScreen: 
-    movw    $0, (%rdi)              #erase what was there before
+    movw    $0x0, (%rdi)              #erase what was there before
     addq    $2, %rdi                #get next memory address
     cmpq    $vgaEnd, %rdi           #check if it is the end
     jl      clearScreen             #if its not the end continue
@@ -69,6 +71,9 @@ clearScreen:
 	movq	$4, %r14				#size
 	movq	$0, %r15				#counter of loops to determine clock speed
 	movq	$0, score
+	movq	$0, score_xxx1
+	movq	$0, score_xx1x
+	movq	$0, score_x1xx
 
 	movb	$'H', %al
 	movb	$0x2, %ah
@@ -150,20 +155,32 @@ drawArenaBottom:
 
 	addq    $80, %rdi
 	movb	$0x0F, %ah
-	movb	$'S', %al
+	movb	$'H', %al
 	movw    %ax, (%rdi) 
 	movb	$0x0F, %ah		
-	movb	$'C', %al
+	movb	$'I', %al
 	movw    %ax, 2(%rdi)
 	movb	$0x0F, %ah
-	movb	$'O', %al
+	movb	$'G', %al
 	movw    %ax, 4(%rdi)
 	movb	$0x0F, %ah
-	movb	$'R', %al
+	movb	$'H', %al
 	movw    %ax, 6(%rdi)
 	movb	$0x0F, %ah
-	movb	$'E', %al
+	movb	$'S', %al
 	movw    %ax, 8(%rdi)
+
+	movb	$'C', %al
+	movw    %ax, 10(%rdi)
+	movb	$0x0F, %ah
+	movb	$'O', %al
+	movw    %ax, 12(%rdi)
+	movb	$0x0F, %ah
+	movb	$'R', %al
+	movw    %ax, 14(%rdi)
+	movb	$0x0F, %ah
+	movb	$'E', %al
+	movw    %ax, 16(%rdi)
 
 
 gameLoop:
@@ -180,6 +197,20 @@ gameLoop:
 	movb	$0x0F, %ah
 	movb	$0x30, %al
 	addb	score_x1xx, %al
+	movw    %ax, 2(%rdi)
+
+	addq    $80, %rdi
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	highScore_xxx1, %al
+	movw    %ax, 6(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	highScore_xx1x, %al
+	movw    %ax, 4(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	highScore_x1xx, %al
 	movw    %ax, 2(%rdi)
 
 	cmpb	$0, isgameover(%rip)			#checks if game over
@@ -332,12 +363,21 @@ grow:
 	grow_rest:
 		incq	score
 		
-		/*cmpq	score, highScore
+		movq	score, %rcx
+		cmpq	%rcx, highScore
 		jge	noNewHighScore
+
 		newHighScore:
 		movq	score, %rbx
-		movq	%rbx, highScore*/
-		
+		movq	%rbx, highScore
+		movq	score_x1xx, %rbx
+		movq	%rbx, highScore_x1xx
+		movq	score_xx1x, %rbx
+		movq	%rbx, highScore_xx1x
+		movq	score_xxx1, %rbx
+		movq	%rbx, highScore_xxx1
+
+		noNewHighScore:
 
 
 		incq	%r14					#increase size
@@ -357,10 +397,10 @@ score_calc_xxx1:
 
 score_calc_xx1x:
 	cmpq	$9, score_xx1x
-	jge	reset_xx1x
+	jge		reset_xx1x
 
 	incq	score_xx1x
-	jmp	grow_rest
+	jmp		grow_rest
 
 	reset_xx1x:
 		movq	$0, score_xx1x
@@ -368,20 +408,9 @@ score_calc_xx1x:
 
 score_calc_x1xx:
 	cmpq	$9, score_x1xx
-	jge	reset_x1xx
-
-	incq	score_x1xx
-	jmp	grow_rest
-
-	reset_x1xx:
-		movq	$0, score_x1xx
-		jmp	score_calc_1xxx
-
-score_calc_1xxx:
-	cmpq	$9, score_1xxx
 	jge	win_case
 
-	incq	score_1xxx
+	incq	score_x1xx
 	jmp	grow_rest
 
 win_case:
