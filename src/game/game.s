@@ -117,7 +117,7 @@ drawArenaBottom:
     cmpq    $arenaEnd, %rdi
     jl      drawArenaBottom   
 
-	
+drawSnake:	
 	movq    $vgaStart, %rdi			#display "snake"
 	addq    $394, %rdi
 	movb	$0x0A, %ah
@@ -136,7 +136,7 @@ drawArenaBottom:
 	movb	$'E', %al
 	movw    %ax, 8(%rdi)
 
-
+drawScore:
 	movq    $vgaStart, %rdi		#display "score"
 	addq    $354, %rdi
 	movb	$0x0F, %ah
@@ -155,6 +155,7 @@ drawArenaBottom:
 	movb	$'E', %al
 	movw    %ax, 8(%rdi)
 
+drawHighscore:
 	addq    $80, %rdi			#highscore display
 	movb	$0x0E, %ah
 	movb	$'H', %al
@@ -185,34 +186,8 @@ drawArenaBottom:
 
 
 gameLoop:
-	movq    $vgaStart, %rdi
-	addq    $514, %rdi
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	score_xxx1, %al
-	movw    %ax, 6(%rdi)
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	score_xx1x, %al
-	movw    %ax, 4(%rdi)
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	score_x1xx, %al
-	movw    %ax, 2(%rdi)
-
-	addq    $84, %rdi
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	highScore_xxx1, %al
-	movw    %ax, 6(%rdi)
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	highScore_xx1x, %al
-	movw    %ax, 4(%rdi)
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	highScore_x1xx, %al
-	movw    %ax, 2(%rdi)
+	call	updateScore
+	call	updateHighscore
 
 	cmpb	$0, isgameover(%rip)			#checks if game over
 	jne		gameOver
@@ -232,6 +207,38 @@ gameLoop:
 	je		right
 
 	jmp		move
+	
+updateScore:
+	movq    $vgaStart, %rdi
+	addq    $514, %rdi
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	score_xxx1, %al
+	movw    %ax, 6(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	score_xx1x, %al
+	movw    %ax, 4(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	score_x1xx, %al
+	movw    %ax, 2(%rdi)
+
+updateHighSchool:
+	movq    $vgaStart, %rdi
+	addq    $84, %rdi
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	highScore_xxx1, %al
+	movw    %ax, 6(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	highScore_xx1x, %al
+	movw    %ax, 4(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	highScore_x1xx, %al
+	movw    %ax, 2(%rdi)
 
 up:
 	movb	$'I', %al
