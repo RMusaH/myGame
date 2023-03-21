@@ -147,14 +147,39 @@ drawArenaBottom:
 	movb	$'E', %al
 	movw    %ax, 8(%rdi)
 
+	addq    $80, %rdi
+	movb	$0x0F, %ah
+	movb	$'S', %al
+	movw    %ax, (%rdi) 
+	movb	$0x0F, %ah		
+	movb	$'C', %al
+	movw    %ax, 2(%rdi)
+	movb	$0x0F, %ah
+	movb	$'O', %al
+	movw    %ax, 4(%rdi)
+	movb	$0x0F, %ah
+	movb	$'R', %al
+	movw    %ax, 6(%rdi)
+	movb	$0x0F, %ah
+	movb	$'E', %al
+	movw    %ax, 8(%rdi)
+
 
 gameLoop:
 	movq    $vgaStart, %rdi
 	addq    $514, %rdi
 	movb	$0x0F, %ah
 	movb	$0x30, %al
-	addb	score, %al
+	addb	score_xxx1, %al
+	movw    %ax, 6(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	score_xx1x, %al
 	movw    %ax, 4(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	score_x1xx, %al
+	movw    %ax, 2(%rdi)
 
 	cmpb	$0, isgameover(%rip)			#checks if game over
 	jne		gameOver
