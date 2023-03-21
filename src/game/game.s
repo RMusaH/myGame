@@ -386,6 +386,9 @@ grow:
 score_calc_xxx1:
 	cmpq	$9, score_xxx1
 	jge	reset_xxx1
+	
+	cmpq	$5, score_xxx1
+	je	win_case
 
 	incq	score_xxx1
 	jmp	grow_rest
@@ -414,20 +417,34 @@ score_calc_x1xx:
 
 win_case:
 	movq    $posStart, %rdi
-	subq    $8, %rdi	#shouldnt here be subq	$16? since ig you are making space for 8 words and 1 word is 2 bytes
-	movw    $0x0F47, (%rdi)  		#game over shows
-	movw    $0x0F41, 2(%rdi)
-	movw    $0x0F4D, 4(%rdi)
-	movw    $0x0F45, 6(%rdi)
-	movw    $0x0F4F, 10(%rdi)
-	movw    $0x0F56, 12(%rdi)
-	movw    $0x0F45, 14(%rdi)
-	movw    $0x0F52, 16(%rdi)
+	addq    $354, %rdi
+	movb	$0x0F, %ah
+	movb	$'V', %al
+	movw    %ax, (%rdi) 
+	movb	$0x0F, %ah		
+	movb	$'I', %al
+	movw    %ax, 2(%rdi)
+	movb	$0x0F, %ah
+	movb	$'C', %al
+	movw    %ax, 4(%rdi)
+	movb	$0x0F, %ah
+	movb	$'T', %al
+	movw    %ax, 6(%rdi)
+	movb	$0x0F, %ah
+	movb	$'O', %al
+	movw    %ax, 8(%rdi)
+	movb	$0x0F, %ah
+	movb	$'R', %al
+	movw    %ax, 10(%rdi)
+	movb	$0x0F, %ah
+	movb	$'Y', %al
+	movw    %ax, 12(%rdi)
 	movb	$1, isgameover
 
 	call	readKeyCode
 	cmpq	$0x39, %rax
 	je		gameInit
+	jmp	endLoop
 
 
 gameOver:
