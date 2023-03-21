@@ -104,6 +104,24 @@ drawArenaBottom:
     cmpq    $arenaEnd, %rdi
     jl      drawArenaBottom   
 
+	
+	movq    $vgaStart, %rdi			#display "snake"
+	addq    $554, %rdi
+	movb	$0x0A, %ah
+	movb	$'S', %al
+	movw    %ax, (%rdi) 
+	movb	$0x0A, %ah		
+	movb	$'N', %al
+	movw    %ax, 2(%rdi)
+	movb	$0x0A, %ah
+	movb	$'A', %al
+	movw    %ax, 4(%rdi)
+	movb	$0x0A, %ah
+	movb	$'K', %al
+	movw    %ax, 6(%rdi)
+	movb	$0x0A, %ah
+	movb	$'E', %al
+	movw    %ax, 8(%rdi)
 
 
 gameLoop:
