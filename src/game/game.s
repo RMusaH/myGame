@@ -207,13 +207,26 @@ gameLoop:
 	call	readKeyCode
 	cmpq	$0, %rax
 	je		move
+
 	cmpq	$0x11, %rax			#compare W
 	je		up
+	cmpq	$0x48, %rax			#compare up-arr
+	je		up
+
+
 	cmpq	$0x1E, %rax			#compare A
 	je		left
+	cmpq	$0x4B, %rax			#compare left-arr
+	je		left
+
 	cmpq	$0x1F, %rax			#compare S
 	je		down
+	cmpq	$0x50, %rax			#compare down-arr
+	je		down
+
 	cmpq	$0x20, %rax			#compare D
+	je		right
+	cmpq	$0x4D, %rax			#compare right-arr
 	je		right
 
 	jmp		move
