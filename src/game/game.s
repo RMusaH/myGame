@@ -51,6 +51,8 @@ fruitPos:		.quad 0						#has the fruit position
 	.equ		arenaEnd, 	0xB8B20				#+2848 (18 lines - 1/5)
 	scoreMsg:		.asciz		"SCORE"
 	highscoreMsg:	.asciz		"HIGHSCORE"
+	victoryMsg:		.asciz		"VICTORY"
+	snakeMsg:		.asciz		"SNAKE"
 
 
 gameInit:
@@ -119,17 +121,17 @@ drawArenaBottom:
 	call	printSnake
 	
 	leaq	scoreMsg(%rip), %rcx	#string to print
-	movq	$1, %rsi				#color of the string 1- black
+	movq	$1, %r8				#color of the string 1- black
 	movq	$vgaStart, %rdi			#display "score"
 	addq    $354, %rdi				#where to print
 
 	call	printText
-	movq	$0, %rcx
 
 	leaq	highscoreMsg(%rip), %rcx
-	movq	$3, %rsi
+	movq	$3, %r8
 	movq	$vgaStart, %rdi			#display "score"
 	addq    $434, %rdi
+
 	call	printText
 
 	jmp		gameLoop
@@ -137,45 +139,34 @@ drawArenaBottom:
 printSnake:
 	movq    $vgaStart, %rdi			#display "snake"
 	addq    $394, %rdi
-	movb	$0x0A, %ah
-	movb	$'S', %al
-	movw    %ax, (%rdi) 
-	movb	$0x0A, %ah		
-	movb	$'N', %al
-	movw    %ax, 2(%rdi)
-	movb	$0x0A, %ah
-	movb	$'A', %al
-	movw    %ax, 4(%rdi)
-	movb	$0x0A, %ah
-	movb	$'K', %al
-	movw    %ax, 6(%rdi)
-	movb	$0x0A, %ah
-	movb	$'E', %al
-	movw    %ax, 8(%rdi)
+	movq	$2, %r8
+	leaq	snakeMsg(%rip), %rcx
+	call	printText
 
 	ret
 
 printText:
-	movq	$0, %r8
-
-	cmpq	$1, %rsi
+	cmpq	$1, %r8
 	je		black
 
-	cmpq	$2, %rsi
+	cmpq	$2, %r8
 	je		green
 
-	cmpq	$3, %rsi
+	cmpq	$3, %r8
 	je		yellow
 
 	black:
 		movb	$0x0F, %ah
+		movq	$0, %r8
 		jmp		printMsgLoop
 
 	yellow:
-		movb	$0x0E, %ah	
+		movb	$0x0E, %ah
+		movq	$0, %r8	
 		jmp		printMsgLoop
 
 	green:
+		movq	$0, %r8
 		movb	$0x0A, %ah
 
 	printMsgLoop:		
@@ -185,38 +176,6 @@ printText:
 		movb	(%rcx, %r8, 1), %al
 		cmpb	$0, %al
 		jne		printMsgLoop
-
-	ret
-
-printHighscore:
-	movq    $vgaStart, %rdi
-	addq    $434, %rdi			#highscore display
-	movb	$0x0E, %ah
-	movb	$'H', %al
-	movw    %ax, (%rdi) 
-	movb	$0x0E, %ah		
-	movb	$'I', %al
-	movw    %ax, 2(%rdi)
-	movb	$0x0E, %ah
-	movb	$'G', %al
-	movw    %ax, 4(%rdi)
-	movb	$0x0E, %ah
-	movb	$'H', %al
-	movw    %ax, 6(%rdi)
-	movb	$0x0E, %ah
-	movb	$'S', %al
-	movw    %ax, 8(%rdi)
-	movb	$'C', %al
-	movw    %ax, 10(%rdi)
-	movb	$0x0E, %ah
-	movb	$'O', %al
-	movw    %ax, 12(%rdi)
-	movb	$0x0E, %ah
-	movb	$'R', %al
-	movw    %ax, 14(%rdi)
-	movb	$0x0E, %ah
-	movb	$'E', %al
-	movw    %ax, 16(%rdi)
 
 	ret
 
@@ -384,11 +343,8 @@ checkDeadByWall:						#check if player is on the side walls
 	jmp		gameOver
 
 notDead:
-
-
 	cmpq	%rdi, fruitPos				#checks if got the fruit
 	je		grow
-
 
 	movq	$0, %r15
 
@@ -456,29 +412,13 @@ score_calc_x1xx:
 	jmp	grow_rest
 
 win_case:
+
 	movq    $vgaStart, %rdi
 	addq    $552, %rdi
-	movb	$0x0E, %ah
-	movb	$'V', %al
-	movw    %ax, (%rdi) 
-	movb	$0x0E, %ah		
-	movb	$'I', %al
-	movw    %ax, 2(%rdi)
-	movb	$0x0E, %ah
-	movb	$'C', %al
-	movw    %ax, 4(%rdi)
-	movb	$0x0E, %ah
-	movb	$'T', %al
-	movw    %ax, 6(%rdi)
-	movb	$0x0E, %ah
-	movb	$'O', %al
-	movw    %ax, 8(%rdi)
-	movb	$0x0E, %ah
-	movb	$'R', %al
-	movw    %ax, 10(%rdi)
-	movb	$0x0E, %ah
-	movb	$'Y', %al
-	movw    %ax, 12(%rdi)
+	leaq	victoryMsg(%rip), %rcx
+	movq	$3, %r8
+	call	printText
+
 	movb	$1, isWin
 
 	call	readKeyCode
