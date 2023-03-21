@@ -42,6 +42,8 @@ snakePos:		.zero 6000					#array with every location of the snake
 
 fruitPos:		.quad 0						#has the fruit position
 
+timer:			.quad 0
+
 
 
 .section .game.text
@@ -76,7 +78,7 @@ clearScreen:
 	movq	$0, %r12				#position to start
 	movq	$2, %r13				#witch offset to move
 	movq	$4, %r14				#size
-	movq	$0, %r15				#counter of loops to determine clock speed
+	movq	$0, timer				#counter of loops to determine clock speed
 	movq	$0, score
 	movq	$0, score_xxx1
 	movq	$0, score_xx1x
@@ -312,8 +314,8 @@ right:
 
 move:
 	
-	incq	%r15						#clock speed to determine when should it move
-	cmpq	$10, %r15
+	incq	timer						#clock speed to determine when should it move
+	cmpq	$10, timer
 	jl		endLoop
 
 	movq	%r13, lastMove
@@ -537,7 +539,6 @@ putFruit:
 
 
 checkFruitLoop:						#check if fruit is on the arena
-	#addq	$2, %rdi
 	addq	$94, %rcx
 
 	cmpq	%rcx, %rdi
