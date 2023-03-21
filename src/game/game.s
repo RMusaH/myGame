@@ -43,6 +43,7 @@ snakePos:		.zero 6000					#array with every location of the snake
 fruitPos:		.quad 0						#has the fruit position
 
 timer:			.quad 0
+timerCount:		.quad 0
 
 
 
@@ -313,8 +314,15 @@ right:
 	jmp		move
 
 move:
-	
-	incq	timer						#clock speed to determine when should it move
+	movq	$0, %rdx
+	movq	timerCount, %rax
+	movq	$5, %rcx
+	divq	%rcx
+	movq	$0, %rdx
+
+	addq	$1, %rax
+	addq	%rax, timer
+	/incq	timer						#clock speed to determine when should it move
 	cmpq	$10, timer
 	jl		endLoop
 
@@ -394,6 +402,7 @@ notDead:
 	jmp 	endLoop
 
 grow:
+	incq	timerCount
 	jmp	score_calc_xxx1
 	grow_rest:
 		incq	score
@@ -417,7 +426,7 @@ grow:
 
 		incq	%r14		#increase size
 
-		cmpq	$3, score
+		cmpq	$10, score
 		je		win_case				
 
 		call	putFruit	
@@ -504,6 +513,8 @@ gameOver:
 	leaq	continueMsg(%rip), %rcx
 	movq	$1, %r8
 	call	printText
+
+	movq	$0, timerCount
 
 	call	readKeyCode
 	cmpq	$0x39, %rax
