@@ -31,7 +31,7 @@ toPrint:		.quad 0						#contains witch cchar to print
 
 lastMove:		.quad 0						#keeps track of last move
 
-wallsData:		.quad 0
+score:			.quad 0
 
 snakePos:		.zero 6000					#array with every location of the snake
 
@@ -63,6 +63,7 @@ clearScreen:
 	movq	$2, %r13				#witch offset to move
 	movq	$4, %r14				#size
 	movq	$0, %r15				#counter of loops to determine clock speed
+	movq	$0, score
 
 	movb	$'H', %al
 	movb	$0x2, %ah
@@ -124,8 +125,32 @@ drawArenaBottom:
 	movw    %ax, 8(%rdi)
 
 
+	movq    $vgaStart, %rdi		#display "score"
+	addq    $354, %rdi
+	movb	$0x0F, %ah
+	movb	$'S', %al
+	movw    %ax, (%rdi) 
+	movb	$0x0F, %ah		
+	movb	$'C', %al
+	movw    %ax, 2(%rdi)
+	movb	$0x0F, %ah
+	movb	$'O', %al
+	movw    %ax, 4(%rdi)
+	movb	$0x0F, %ah
+	movb	$'R', %al
+	movw    %ax, 6(%rdi)
+	movb	$0x0F, %ah
+	movb	$'E', %al
+	movw    %ax, 8(%rdi)
+
+
 gameLoop:
-	
+	movq    $vgaStart, %rdi
+	addq    $514, %rdi
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	score, %al
+	movw    %ax, 4(%rdi)
 
 	cmpb	$0, isgameover(%rip)			#checks if game over
 	jne		gameOver
@@ -273,6 +298,7 @@ notDead:
 	jmp 	endLoop
 
 grow:
+	incq	score
 	incq	%r14					#increase size
 	call	putFruit
 	jmp		endLoop
