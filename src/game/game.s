@@ -357,9 +357,6 @@ grow:
 	jmp	score_calc_xxx1
 	grow_rest:
 		incq	score
-
-		cmpq	$1, score
-		je		win_case
 		
 		movq	score, %rcx
 		cmpq	%rcx, highScore
@@ -378,8 +375,12 @@ grow:
 		noNewHighScore:
 
 
-		incq	%r14					#increase size
-		call	putFruit
+		incq	%r14		#increase size
+
+		cmpq	$10, score
+		je		win_case				
+
+		call	putFruit	
 		jmp		endLoop
 
 score_calc_xxx1:
