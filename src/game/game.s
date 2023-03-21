@@ -36,6 +36,7 @@ score_x1xx:		.quad 0
 highScore_xxx1:	.quad 0
 highScore_xx1x:	.quad 0
 highScore_x1xx:	.quad 0
+fruitDebug:		.quad 0
 
 snakePos:		.zero 6000					#array with every location of the snake
 
@@ -501,11 +502,10 @@ endLoop:
 putFruit:
 	rdtsc                       	#get random pos to put the fruit    
 	movq    $0, %rdx
-	movq    $478, %rcx         		#(1856-160x2-64x9-4)/2
+	movq    $469, %rcx         		#(1856-160x2-64x9-4)/2
 	divq	%rcx
 
 	movq	%rdx, %rax
-	#movq	$0, %rax
 
 	movq	$2, %rcx
 	mulq	%rcx
@@ -520,36 +520,36 @@ putFruit:
 	addq	$162, %rdi
 
 	movq	$arenaStart, %rcx
-	addq	$160, %rcx
+	addq	$162, %rcx
 
 
 checkFruitLoop:						#check if fruit is on the arena
-	addq	$96, %rcx
+	#addq	$2, %rdi
+	addq	$94, %rcx
 
 	cmpq	%rcx, %rdi
 	jl		endCheckFruitLoop
 
-	addq	$64, %rdi
+	addq	$66, %rdi
 
-	addq	$64, %rcx
+	addq	$66, %rcx
 
 	cmpq	%rcx, %rdi
 	jg		checkFruitLoop
 
 endCheckFruitLoop:
 
-	movq	$0, %r15				#loop counter
+	movq	$0, %rsi				#loop counter
 
 checkForPlayer:
 	movq	$posStart, %rcx						#loop to check if snake is on itself
-	addq	snakePos(,%r15,8), %rcx
+	addq	snakePos(,%rsi,8), %rcx
 	cmpq	%rdi, %rcx
 	je		putFruit
 
-	incq	%r15
-	cmpq	%r14, %r15
+	incq	%rsi
+	cmpq	%r14, %rsi
 	jle		checkForPlayer
-
 
 	movq	%rdi, fruitPos				#saves the location of the fruit
 
@@ -557,5 +557,7 @@ checkForPlayer:
 	#movb	$'., %al #--> print a dot for some reason, so to print a non-letter character dont add ending '
 	movb	$0x0C, %ah
 	movw	%ax, (%rdi)
+
+	movq	$0, %r15
 
 	ret
