@@ -215,26 +215,37 @@ checkIfDead:
 	cmpq	%r14, %r15
 	jle		checkIfDead
 
+	movq	$arenaStart, %rcx			#check colision w top wall
+	addq	$160, %rcx
+	cmpq	%rcx, %rdi
+	jle		gameOver
+
+	movq	$arenaEnd, %rcx			#check colision w bottom wall
+	subq	$160, %rcx
+	cmpq	%rcx, %rdi
+	jge		gameOver
+
+	movq	$arenaStart, %rcx
+	addq	$160, %rcx
+
+checkDeadByWall:						#check if player is on the side walls
+	addq	$96, %rcx
+
+	cmpq	%rcx, %rdi
+	jl		notDead
+
+	addq	$64, %rcx
+
+	cmpq	%rcx, %rdi
+	jg		checkDeadByWall
+	jmp		gameOver
+
+notDead:
+
+
 	cmpq	%rdi, fruitPos				#checks if got the fruit
 	je		grow
 
-	cmpq	$vgaEnd, %rdi				#check if it's on the down edge
-	jg		goToTop
-	cmpq	$vgaStart, %rdi				#check if it's on the top edge
-	jl		goToBottom
-	jmp		normalMove
-
-goToTop:
-
-	subq	$4160, %r12
-	jmp		normalMove
-
-goToBottom:
-
-	addq	$4160, %r12
-	jmp		normalMove
-
-normalMove:
 
 	movq	$0, %r15
 
@@ -305,8 +316,6 @@ checkFruitLoop:						#check if fruit is on the arena
 	jg		checkFruitLoop
 
 endCheckFruitLoop:
-
-
 
 
 	movq	%rdi, fruitPos				#saves the location of the fruit
