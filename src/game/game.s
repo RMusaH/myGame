@@ -32,10 +32,16 @@ toPrint:		.quad 0						#contains witch cchar to print
 lastMove:		.quad 0						#keeps track of last move
 
 score:			.quad 0
-score_xxx1:			.quad 0
-score_xx1x:			.quad 0
-score_x1xx:			.quad 0
-score_1xxx:			.quad 0
+									#TO DO
+score_xxx1:		.quad 0						#score for printing
+									#(4 number char -> i think can be nicer than current implementation)
+score_xx1x:		.quad 0
+score_x1xx:		.quad 0
+score_1xxx:		.quad 0
+
+									#TO DO
+fruitCount:		.quad 0						#when reaches 5 -> big fruit is put on the board to eaT
+									#(should be timed and give more points)
 
 snakePos:		.zero 6000					#array with every location of the snake
 
@@ -302,7 +308,7 @@ notDead:
 	jmp 	endLoop
 
 grow:
-	jmp	score_calc_xxx1
+	jmp	score_calc_xxx1				#score x x x x ex. 9 9 9 9
 	grow_rest:
 		incq	score
 		incq	%r14					#increase size
@@ -310,7 +316,8 @@ grow:
 		jmp		endLoop
 	
 score_calc_xxx1:
-	cmpq	$9, score_xxx1
+	cmpq	$9, score_xxx1				#check if the in the score a b c d, d = 9, if it does -> increment c and make d = 0
+							#other operations work in a similar manner
 	jge	reset_xxx1
 	
 	incq	score_xxx1
@@ -350,7 +357,7 @@ score_calc_1xxx:
 	jmp	grow_rest
 	
 win_case:
-	movq    $posStart, %rdi
+	movq    $posStart, %rdi		#should display "YOU WON", "VICTORY", "CONGRATZ" or something like that
 	subq    $8, %rdi	#shouldnt here be subq	$16? since ig you are making space for 8 words and 1 word is 2 bytes
 	movw    $0x0F47, (%rdi)  		#game over shows
 	movw    $0x0F41, 2(%rdi)
@@ -392,23 +399,36 @@ endLoop:
 
 
 putFruit:
-	rdtsc                       	#get random pos to put the fruit    
-	movq    $0, %rdx
-	movq    $478, %rcx         		#(1856-160x2-64x9-4)/2
-	divq	%rcx
-
-	movq	%rdx, %rax
-
-	movq	$2, %rcx
-	mulq	%rcx
+	incq 	fruitCount		#fruit count for big fruit (from the original snake) -> every 5th fruit is a big one(more points, timed, bigger)
+	cmpq	$5, fruitCount
+	jge	bigFruit
 	
-	movq	%rax, %rdi
+	putFruit_put:
+		rdtsc                       	#get random pos to put the fruit    
+		movq    $0, %rdx
+		movq    $478, %rcx         		#(1856-160x2-64x9-4)/2
+		divq	%rcx
 
-	addq	$arenaStart, %rdi
-	addq	$162, %rdi
+		movq	%rdx, %rax
 
-	movq	$arenaStart, %rcx
-	addq	$160, %rcx
+		movq	$2, %rcx
+		mulq	%rcx
+
+		movq	%rax, %rdi
+
+		addq	$arenaStart, %rdi
+		addq	$162, %rdi
+
+		movq	$arenaStart, %rcx
+		addq	$160, %rcx
+		
+bigFruit:
+	movq	$0, fruitCount
+	#
+	#	TO
+	#	IMPLEMENT
+	#
+	jmp	putFruit_put
 
 
 checkFruitLoop:						#check if fruit is on the arena
