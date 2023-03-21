@@ -456,6 +456,7 @@ win_case:
 	/je		gameInit
 
 	movb	$0, isWin
+	call 	putFruit
 
 dontContinue:
 	jmp	endLoop
