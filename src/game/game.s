@@ -26,6 +26,7 @@ along with gamelib-x64. If not, see <http://www.gnu.org/licenses/>.
 
 
 isgameover:		.byte 0						#checks if it's game over
+isWin:			.byte 0
 
 toPrint:		.quad 0						#contains witch cchar to print
 
@@ -80,6 +81,7 @@ clearScreen:
 	movw	%ax, toPrint
 
 	movb	$0, isgameover(%rip)
+	movb	$0, isWin(%rip)
 
 	call 	putFruit
 
@@ -117,7 +119,7 @@ drawArenaBottom:
 
 	
 	movq    $vgaStart, %rdi			#display "snake"
-	addq    $554, %rdi
+	addq    $394, %rdi
 	movb	$0x0A, %ah
 	movb	$'S', %al
 	movw    %ax, (%rdi) 
@@ -214,6 +216,8 @@ gameLoop:
 
 	cmpb	$0, isgameover(%rip)			#checks if game over
 	jne		gameOver
+	cmpb	$0, isWin(%rip)			#checks if game over
+	jne		win_case
 	
 	call	readKeyCode
 	cmpq	$0, %rax
@@ -361,6 +365,9 @@ grow:
 	jmp	score_calc_xxx1
 	grow_rest:
 		incq	score
+
+		cmpq	$1, score
+		je		win_case
 		
 		movq	score, %rcx
 		cmpq	%rcx, highScore
@@ -386,9 +393,6 @@ grow:
 score_calc_xxx1:
 	cmpq	$9, score_xxx1
 	jge	reset_xxx1
-	
-	cmpq	$5, score_xxx1
-	je	win_case
 
 	incq	score_xxx1
 	jmp	grow_rest
@@ -416,34 +420,38 @@ score_calc_x1xx:
 	jmp	grow_rest
 
 win_case:
-	movq    $posStart, %rdi
-	addq    $354, %rdi
-	movb	$0x0F, %ah
+	movq    $vgaStart, %rdi
+	addq    $712, %rdi
+	movb	$0x0E, %ah
 	movb	$'V', %al
 	movw    %ax, (%rdi) 
-	movb	$0x0F, %ah		
+	movb	$0x0E, %ah		
 	movb	$'I', %al
 	movw    %ax, 2(%rdi)
-	movb	$0x0F, %ah
+	movb	$0x0E, %ah
 	movb	$'C', %al
 	movw    %ax, 4(%rdi)
-	movb	$0x0F, %ah
+	movb	$0x0E, %ah
 	movb	$'T', %al
 	movw    %ax, 6(%rdi)
-	movb	$0x0F, %ah
+	movb	$0x0E, %ah
 	movb	$'O', %al
 	movw    %ax, 8(%rdi)
-	movb	$0x0F, %ah
+	movb	$0x0E, %ah
 	movb	$'R', %al
 	movw    %ax, 10(%rdi)
-	movb	$0x0F, %ah
+	movb	$0x0E, %ah
 	movb	$'Y', %al
 	movw    %ax, 12(%rdi)
-	movb	$1, isgameover
+	movb	$1, isWin
 
 	call	readKeyCode
 	cmpq	$0x39, %rax
-	je		gameInit
+	jne		dontContinue
+
+	movb	$0, isWin
+
+dontContinue:
 	jmp	endLoop
 
 
