@@ -501,11 +501,11 @@ endLoop:
 putFruit:
 	rdtsc                       	#get random pos to put the fruit    
 	movq    $0, %rdx
-	//movq    $478, %rcx         		#(1856-160x2-64x9-4)/2
-	movq	$447, %rcx					#(23*78 - ...)
+	movq    $478, %rcx         		#(1856-160x2-64x9-4)/2
 	divq	%rcx
 
 	movq	%rdx, %rax
+	#movq	$0, %rax
 
 	movq	$2, %rcx
 	mulq	%rcx
@@ -517,7 +517,7 @@ putFruit:
 	movq	%rax, %rdi
 
 	addq	$arenaStart, %rdi
-	addq	$160, %rdi
+	addq	$162, %rdi
 
 	movq	$arenaStart, %rcx
 	addq	$160, %rcx
@@ -538,11 +538,23 @@ checkFruitLoop:						#check if fruit is on the arena
 
 endCheckFruitLoop:
 
+	movq	$0, %r15				#loop counter
+
+checkForPlayer:
+	movq	$posStart, %rcx						#loop to check if snake is on itself
+	addq	snakePos(,%r15,8), %rcx
+	cmpq	%rdi, %rcx
+	je		putFruit
+
+	incq	%r15
+	cmpq	%r14, %r15
+	jle		checkForPlayer
+
 
 	movq	%rdi, fruitPos				#saves the location of the fruit
 
 	movb	$'0', %al
-	#movq	$'., %al --> print a dot for some reason, so to print a non-letter character dont add ending '
+	#movb	$'., %al #--> print a dot for some reason, so to print a non-letter character dont add ending '
 	movb	$0x0C, %ah
 	movw	%ax, (%rdi)
 
