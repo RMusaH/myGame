@@ -145,6 +145,9 @@ printSnake:
 
 	ret
 
+#rdi - where to print(place)
+#rcx - what to print(declared string)
+#r8  - color
 printText:
 	cmpq	$1, %r8
 	je		black
@@ -180,34 +183,8 @@ printText:
 	ret
 
 gameLoop:
-	movq    $vgaStart, %rdi
-	addq    $514, %rdi
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	score_xxx1, %al
-	movw    %ax, 6(%rdi)
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	score_xx1x, %al
-	movw    %ax, 4(%rdi)
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	score_x1xx, %al
-	movw    %ax, 2(%rdi)
-
-	addq    $84, %rdi
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	highScore_xxx1, %al
-	movw    %ax, 6(%rdi)
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	highScore_xx1x, %al
-	movw    %ax, 4(%rdi)
-	movb	$0x0F, %ah
-	movb	$0x30, %al
-	addb	highScore_x1xx, %al
-	movw    %ax, 2(%rdi)
+	call	scoreUpdate
+	call	hscoreUpdate
 
 	cmpb	$0, isgameover(%rip)			#checks if game over
 	jne		gameOver
@@ -227,6 +204,41 @@ gameLoop:
 	je		right
 
 	jmp		move
+
+scoreUpdate:
+	movq    $vgaStart, %rdi
+	addq    $514, %rdi
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	score_xxx1, %al
+	movw    %ax, 6(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	score_xx1x, %al
+	movw    %ax, 4(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	score_x1xx, %al
+	movw    %ax, 2(%rdi)
+
+	ret
+
+hscoreUpdate:
+	addq    $84, %rdi
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	highScore_xxx1, %al
+	movw    %ax, 6(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	highScore_xx1x, %al
+	movw    %ax, 4(%rdi)
+	movb	$0x0F, %ah
+	movb	$0x30, %al
+	addb	highScore_x1xx, %al
+	movw    %ax, 2(%rdi)
+	
+	ret
 
 up:
 	movb	$'I', %al
