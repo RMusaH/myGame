@@ -153,32 +153,31 @@ drawArenaBottom:
 	movb	$'E', %al
 	movw    %ax, 8(%rdi)
 
-	addq    $80, %rdi
-	movb	$0x0F, %ah
+	addq    $80, %rdi			#highscore display
+	movb	$0x0E, %ah
 	movb	$'H', %al
 	movw    %ax, (%rdi) 
-	movb	$0x0F, %ah		
+	movb	$0x0E, %ah		
 	movb	$'I', %al
 	movw    %ax, 2(%rdi)
-	movb	$0x0F, %ah
+	movb	$0x0E, %ah
 	movb	$'G', %al
 	movw    %ax, 4(%rdi)
-	movb	$0x0F, %ah
+	movb	$0x0E, %ah
 	movb	$'H', %al
 	movw    %ax, 6(%rdi)
-	movb	$0x0F, %ah
+	movb	$0x0E, %ah
 	movb	$'S', %al
 	movw    %ax, 8(%rdi)
-
 	movb	$'C', %al
 	movw    %ax, 10(%rdi)
-	movb	$0x0F, %ah
+	movb	$0x0E, %ah
 	movb	$'O', %al
 	movw    %ax, 12(%rdi)
-	movb	$0x0F, %ah
+	movb	$0x0E, %ah
 	movb	$'R', %al
 	movw    %ax, 14(%rdi)
-	movb	$0x0F, %ah
+	movb	$0x0E, %ah
 	movb	$'E', %al
 	movw    %ax, 16(%rdi)
 
@@ -199,7 +198,7 @@ gameLoop:
 	addb	score_x1xx, %al
 	movw    %ax, 2(%rdi)
 
-	addq    $80, %rdi
+	addq    $84, %rdi
 	movb	$0x0F, %ah
 	movb	$0x30, %al
 	addb	highScore_xxx1, %al
