@@ -113,7 +113,13 @@ drawArenaBottom:
     cmpq    $arenaEnd, %rdi
     jl      drawArenaBottom   
 
-	
+	call	printSnake
+	call	printScore
+	call	printHighscore
+
+	jmp		gameLoop
+
+printSnake:
 	movq    $vgaStart, %rdi			#display "snake"
 	addq    $394, %rdi
 	movb	$0x0A, %ah
@@ -132,7 +138,9 @@ drawArenaBottom:
 	movb	$'E', %al
 	movw    %ax, 8(%rdi)
 
+	ret
 
+printScore:
 	movq    $vgaStart, %rdi		#display "score"
 	addq    $354, %rdi
 	movb	$0x0F, %ah
@@ -151,7 +159,11 @@ drawArenaBottom:
 	movb	$'E', %al
 	movw    %ax, 8(%rdi)
 
-	addq    $80, %rdi			#highscore display
+	ret
+
+printHighscore:
+	movq    $vgaStart, %rdi
+	addq    $434, %rdi			#highscore display
 	movb	$0x0E, %ah
 	movb	$'H', %al
 	movw    %ax, (%rdi) 
@@ -179,6 +191,7 @@ drawArenaBottom:
 	movb	$'E', %al
 	movw    %ax, 16(%rdi)
 
+	ret
 
 gameLoop:
 	movq    $vgaStart, %rdi
