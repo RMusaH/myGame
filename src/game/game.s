@@ -195,6 +195,7 @@ printSnake:
 	movq	$2, %r8
 	leaq	headArt5(%rip), %rcx
 	call	printText
+	subq    $160, %rdi
 	movq	$2, %r8
 	leaq	headArt4(%rip), %rcx
 	call	printText
@@ -375,15 +376,11 @@ right:
 
 move:
 
-	cmpq	$14, timerCount
-	je		skipMove
-
 	incq	timer						#clock speed to determine when should it move
 	movq	timerCount, %rax
 	cmpq	%rax, timer
 	jl		endLoop
 
-	skipMove:
 	movq	%r13, lastMove
 
 	movq	%r12, %rdx			#getting last move
@@ -460,11 +457,16 @@ notDead:
 	jmp 	endLoop
 
 grow:
-	jmp	score_calc_xxx1
-	grow_rest:
+
+	jmp score_calc_xxx1
+
+grow_rest:
+
 
 	incq	score
 
+	cmpq	$3, timerCount
+	je		dontGetFaster
 	movq	$0, %rdx
 	movq	score, %rax
 	cmpq	$0, %rax
@@ -475,8 +477,7 @@ grow:
 	jne		dontGetFaster
 
 	decq	timerCount
-
-dontGetFaster:
+	dontGetFaster:
 		
 		movq	score, %rcx
 		cmpq	%rcx, highScore
