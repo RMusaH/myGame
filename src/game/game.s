@@ -187,7 +187,7 @@ printSnake:
 	call	printText
 
 	movq    $vgaEnd, %rdi			#display "snake"
-	subq	$56, %rdi
+	subq	$50, %rdi
 	movq	$2, %r8
 	leaq	headArt6(%rip), %rcx
 	call	printText
